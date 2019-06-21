@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -41,10 +42,10 @@ def plot_var(col_name, title, continuous, dataset, x1limit=False, x2limit=False,
         ax2.set_ylabel('')
         ax2.set_title(title + ' by Loan Status')
     else:
-        charge_off_rates = dataset.groupby(col_name)['loan_status'].value_counts(normalize=True).loc[:, 'Charged Off']
+        charge_off_rates = dataset.groupby(col_name)['loan_status'].value_counts(normalize=True).loc[:, 'Default']
         sns.barplot(x=charge_off_rates.index, y=charge_off_rates.values, color='#4f81bd', saturation=1, ax=ax2)
-        ax2.set_ylabel('Fraction of Loans Charged-off')
-        ax2.set_title('Charge-off Rate by ' + title)
+        ax2.set_ylabel('Fraction of Loans Default')
+        ax2.set_title('Default Rate by ' + title)
     if x2limit:
         ax2.set_xlim([x2l, x2u])
     ax2.set_xlabel(title)
@@ -55,15 +56,11 @@ def plot_var(col_name, title, continuous, dataset, x1limit=False, x2limit=False,
 def loan_model():
     # # Preliminary Data Analysis
     # read in the entire raw dataset
-    dataset = pd.read_csv('..\\data\\Loan Data 2017Q2 Clean.csv', header=0)
+    dataset = pd.read_csv(Path('../data/2017Half_clean.csv'), header=0)
     # pd.set_option('display.max_columns', None)
-    dataset.head()
+    print(dataset.head())
 
-    # Look at how many of each response variable we have
-    print(dataset['loan_status'].value_counts(dropna=False))
-    print(dataset['loan_status'].value_counts(normalize=True, dropna=False))
-    print(dataset.shape)
-
+    # dataset['loan_status'].replace('Charged Off', 'Default', inplace=True)
     # # Create a list of columns with missing values for reference later
     # missing_values = ((dataset.isna().sum()) / len(dataset.index)).sort_values(ascending=False)
     #
@@ -74,14 +71,19 @@ def loan_model():
     #
     # # drop columns that are irrelevant like date, or has too many unique values to be useful (job_title),
     # # or does not have any information (out_prncp, pymnt_plan), or information after the loan has been given.
-    # keep_list = ['annual_inc', 'application_type', 'dti', 'delinq_2yrs', 'earliest_cr_line', 'emp_length',
-    #              'home_ownership', 'initial_list_status', 'installment', 'int_rate', 'loan_amnt',
-    #              'loan_status', 'mort_acc', 'open_acc', 'pub_rec', 'pub_rec_bankruptcies', 'purpose',
-    #              'revol_bal', 'revol_util', 'grade', 'term', 'total_acc', 'verification_status']
-    #
+    # keep_list = ['annual_inc', 'application_type', 'dti', 'delinq_2yrs', 'earliest_cr_line',
+    #              'emp_length', 'home_ownership', 'initial_list_status', 'installment', 'int_rate',
+    #              'loan_amnt', 'loan_status', 'mort_acc', 'open_acc', 'pub_rec',
+    #              'pub_rec_bankruptcies', 'purpose', 'revol_bal', 'revol_util', 'grade',
+    #              'term', 'total_acc', 'verification_status']
     # drop_list = [col for col in dataset.columns if col not in keep_list]
     # dataset.drop(labels=drop_list, axis=1, inplace=True)
-    # dataset.to_csv('..\\data\\Loan Data 2017Q2 Clean.csv')
+    # dataset.to_csv(Path('../data/2017Half_clean.csv'), index=False)
+
+    # Look at how many of each response variable we have
+    print(dataset['loan_status'].value_counts(dropna=False))
+    print(dataset['loan_status'].value_counts(normalize=True, dropna=False))
+    print(dataset.shape)
 
     # Create a list of columns with missing values for reference later
     missing_values = ((dataset.isna().sum()) / len(dataset.index)).sort_values(ascending=False)
@@ -164,7 +166,7 @@ def loan_model():
 
     # ### Home Ownership (Categorical)
     # The home ownership status provided by the borrower during registration or obtained from the credit report.
-    # dataset['home_ownership'].replace(['NONE', 'ANY'], 'NaN', inplace=True)
+    dataset['home_ownership'].replace(['NONE', 'ANY'], 'MORTGAGE', inplace=True)
     print(dataset.groupby('loan_status')['home_ownership'].value_counts(dropna=False))
     plot_var('home_ownership', 'Home Ownership', continuous=False, dataset=dataset)
     # dataset['home_ownership'].replace('NaN', np.nan, inplace=True)
@@ -232,7 +234,7 @@ def loan_model():
 
     # ### Purpose (Categorical)
     # A category provided by the borrower for the loan request
-    dataset.groupby('purpose')['loan_status'].value_counts(normalize=True).loc[:, 'Charged Off'].sort_values()
+    dataset.groupby('purpose')['loan_status'].value_counts(normalize=True).loc[:, 'Default'].sort_values()
 
     # ### Revolving Balance (Numerical)
     # Total credit revolving balance
@@ -286,7 +288,7 @@ def loan_model():
 
     # ### Create dummy variables
     # 1 means charged-off and 0 means fully paid and create dummy variables for all categorical variables
-    dataset['loan_status'].replace('Charged Off', 1, inplace=True)
+    dataset['loan_status'].replace('Default', 1, inplace=True)
     dataset['loan_status'].replace('Fully Paid', 0, inplace=True)
 
     dataset = pd.get_dummies(dataset, columns=['grade', 'home_ownership', 'verification_status', 'purpose',
@@ -349,9 +351,9 @@ def loan_model():
     print(classification_report(y_test, y_pred_lr))
 
     # ### Random Forest Model
-    rf_model_path = '..\\data\\rf_1000.joblib'
-    if os.path.exists(rf_model_path):
-        forest = load(rf_model_path)
+    model_rf_path = Path('../data/rf_1000.joblib')
+    if os.path.exists(model_rf_path):
+        forest = load(model_rf_path)
     else:
         n_trees = [50, 100, 250, 500, 1000, 1500, 2500]
         rf_dict = dict.fromkeys(n_trees)
@@ -373,7 +375,7 @@ def loan_model():
 
         plt.plot(n_trees, oob_error_list, 'bo', n_trees, oob_error_list, 'k')
         # Save model to file
-        dump(rf_dict[1000], rf_model_path)
+        dump(rf_dict[1000], model_rf_path)
         forest = rf_dict[1000]
     y_pred_rf = forest.predict(x_test)
 
@@ -418,42 +420,56 @@ def loan_model():
     print("Accuracy: %.2f%%" % (rf_most_important.score(x_test_i, y_test) * 100))
 
     # ### Neural Network Model
+    from keras.models import Sequential
+    from keras.layers import Dense
+    from keras.utils import to_categorical
+    from keras.models import load_model
+    from sklearn.utils import class_weight
+
     scaler = StandardScaler()
     scaler.fit(x_train.astype('float64'))
     StandardScaler(copy=True, with_mean=True, with_std=True)
     x_train_nn = scaler.transform(x_train.astype('float64'))
     x_test_nn = scaler.transform(x_test.astype('float64'))
+    dump(scaler, Path('../data/scaler.joblib'))
 
-    nn_model_path = '..\\data\\nn_model.joblib'
-    if os.path.exists(nn_model_path):
-        mlp = load(nn_model_path)
+    class_weights = class_weight.compute_class_weight('balanced',
+                                                      np.unique(y_train.values.ravel()),
+                                                      y_train.values.ravel())
+
+    model_nn_path = Path('../data/model_nn.h5')
+    if os.path.exists(model_nn_path):
+        model_nn = load_model(str(model_nn_path))
     else:
-        mlp = MLPClassifier(hidden_layer_sizes=(13, 13, 13), max_iter=500, random_state=0)
-        mlp.fit(x_train_nn, y_train.values.ravel())
-        dump(mlp, nn_model_path)
-    y_pred_nn = mlp.predict(x_test_nn)
+        model_nn = Sequential()
+        # Input layer
+        model_nn.add(Dense(20, activation='relu', input_shape=(39,)))
+        # Hidden layer
+        model_nn.add(Dense(15, activation='relu'))
+        model_nn.add(Dense(4, activation='relu'))
+        # Output layer
+        model_nn.add(Dense(2, activation='sigmoid'))
+        model_nn.output_shape
+
+        model_nn.compile(loss='binary_crossentropy',
+                         optimizer='adam',
+                         metrics=['accuracy'])
+        model_nn.fit(x_train_nn, to_categorical(y_train), epochs=5, batch_size=10, class_weight=class_weights,
+                     verbose=1)
+
+        model_nn.save(str(model_nn_path))
+    y_pred_nn = model_nn.predict_classes(x_test_nn)
+    print(model_nn.summary())
+    # y_pred_nn = [round(x[0] for x in y_pred_nn)]
 
     # ### Neural Network Results
-    print("Accuracy: %.2f%%" % (mlp.score(x_test_nn, y_test) * 100))
+    score = model_nn.evaluate(x_test_nn, to_categorical(y_test))
+    print("Accuracy: %.2f%%" % (score[1] * 100))
     print(confusion_matrix(y_test, y_pred_nn))
     print('F1 Score:', f1_score(y_test, y_pred_nn))
     print(classification_report(y_test, y_pred_nn))
-
-    # from sknn.mlp import Classifier
-
-    # scaler = StandardScaler()
-    # scaler.fit(x_train.astype('float64'))
-    # StandardScaler(copy=True, with_mean=True, with_std=True)
-    # x_train_nn = scaler.transform(x_train.astype('float64'))
-    # x_test_nn = scaler.transform(x_test.astype('float64'))
-
-    # w_train = np.array((x_train_nn.shape[0],))
-    # w_train[y_train == 0] = 0.64326267
-    # w_train[y_train == 1] = 2.24504636
-    # nn = Classifier(layers=[Layer("Maxout", units=100, pieces=2), Layer("Softmax")], learning_rate=0.001, n_iter=25)
-    # nn.fit(x_train_nn, y_train, w_train)
-    # y_pred = nn.predict(x_test_nn)
-    # print('Accuracy of Neural Network on test set: {:.3f}'.format(nn.score(x_test_nn, y_test)))
+    NN_probs = pd.DataFrame(model_nn.predict(x_test_nn))
+    print(NN_probs.head())
 
     # ### XGBoost Model
     from xgboost import XGBClassifier
@@ -492,7 +508,7 @@ def loan_model():
     #                                                   accuracy * 100))
 
     # Extract the two most important features
-    model_path_xgb = '..\\data\\model_xgb.joblib'
+    model_path_xgb = Path('../data/model_xgb.joblib')
     if os.path.exists(model_path_xgb):
         model_xgb = load(model_path_xgb)
     else:
@@ -522,7 +538,7 @@ def loan_model():
     from sklearn.svm import SVC
     from sklearn.model_selection import GridSearchCV
 
-    model_svm_path = '..\\data\\model_svm.joblib'
+    model_svm_path = Path('../data/model_svm.joblib')
     if os.path.exists(model_svm_path):
         model_svm = load(model_svm_path)
     else:
@@ -545,7 +561,10 @@ def loan_model():
     # 0.777 C=1 gamma = 1
 
     # ### Ensembled Model
-    ensemble_model_path = '..\\data\\ensemble_model.joblib'
+    # RF_probs = pd.DataFrame(forest.predict_proba(x_test))
+    # LR_probs = pd.DataFrame(lr_model.predict_proba(x_test))
+    # probs
+    ensemble_model_path = Path('../data/ensemble_model.joblib')
     if os.path.exists(ensemble_model_path):
         ensemble = load(ensemble_model_path)
     else:

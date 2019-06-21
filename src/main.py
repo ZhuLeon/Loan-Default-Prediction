@@ -1,8 +1,12 @@
 import os
+from pathlib import Path
 import pandas as pd
 import numpy as np
 from joblib import load
+from keras.models import load_model
+from keras.utils import to_categorical
 from src.Loan_Model import loan_model
+from sklearn.preprocessing import StandardScaler
 
 
 def process_na(input_data):
@@ -66,6 +70,8 @@ def process_input(input_data):
     input_data['emp_length'].replace('9 years', 9, inplace=True)
     input_data['emp_length'].replace('10+ years', 10, inplace=True)
 
+    input_data['home_ownership'].replace(['NONE', 'ANY'], 'MORTGAGE', inplace=True)
+
     input_data['log_installment'] = input_data['installment'].apply(lambda x: np.log(x + 1))
     input_data.drop('installment', axis=1, inplace=True)
 
@@ -90,18 +96,39 @@ def process_input(input_data):
 
 
 def create_dummies(input_data):
-    # Create the dummy variables
+    """
+    What the function does and why
+    :param input_data:
+    :return:
+    (optional) sample usage of function
+    """
+    # Create dummy variables for categorical variables
+    # None of the numerical values have NA so we dont need a special one for that? (reference)
     input_data = pd.get_dummies(input_data, columns=['grade', 'home_ownership', 'verification_status', 'purpose',
                                                      'initial_list_status', 'application_type', 'pub_rec',
                                                      'pub_rec_bankruptcies'], drop_first=False)
 
-    dummy_frame = pd.DataFrame(columns=['term', 'int_rate', 'emp_length', 'dti', 'delinq_2yrs',
+    # Columns list should be equal to the columns the model uses
+    # dummy_frame = pd.DataFrame(columns=['term', 'int_rate', 'emp_length', 'dti', 'delinq_2yrs',
+    #                                     'earliest_cr_line', 'open_acc', 'revol_util', 'total_acc', 'mort_acc',
+    #                                     'log_annual_inc', 'log_installment', 'log_revol_bal', 'grade_B',
+    #                                     'grade_C', 'grade_D', 'home_ownership_OWN', 'home_ownership_RENT',
+    #                                     'verification_status_Source Verified', 'verification_status_Verified',
+    #                                     'purpose_house', 'purpose_small_business',
+    #                                     'application_type_Joint App'])
+    dummy_frame = pd.DataFrame(columns=['loan_amnt', 'term', 'int_rate', 'emp_length', 'dti', 'delinq_2yrs',
                                         'earliest_cr_line', 'open_acc', 'revol_util', 'total_acc', 'mort_acc',
                                         'log_annual_inc', 'log_installment', 'log_revol_bal', 'grade_B',
-                                        'grade_C', 'grade_D', 'home_ownership_OWN', 'home_ownership_RENT',
+                                        'grade_C', 'grade_D', 'grade_E', 'grade_F', 'grade_G',
+                                        'home_ownership_OWN', 'home_ownership_RENT',
                                         'verification_status_Source Verified', 'verification_status_Verified',
-                                        'purpose_house', 'purpose_small_business',
-                                        'application_type_Joint App'])
+                                        'purpose_credit_card', 'purpose_debt_consolidation',
+                                        'purpose_home_improvement', 'purpose_house', 'purpose_major_purchase',
+                                        'purpose_medical', 'purpose_moving', 'purpose_other',
+                                        'purpose_renewable_energy', 'purpose_small_business',
+                                        'purpose_vacation', 'initial_list_status_w',
+                                        'application_type_Joint App', 'pub_rec_At least one',
+                                        'pub_rec_bankruptcies_At least one'])
     input_data = input_data.reindex(columns=dummy_frame.columns, fill_value=0)
 
     return input_data
@@ -110,38 +137,47 @@ def create_dummies(input_data):
 def print_prediction(input_data, prod_model, output):
     output = pd.DataFrame(output, columns=['Prediction'])
     output['Prediction'].replace(0, 'Fully Paid', inplace=True)
-    output['Prediction'].replace(1, 'Charged Off', inplace=True)
+    output['Prediction'].replace(1, 'Default', inplace=True)
     print(output)
     p_output = pd.DataFrame(prod_model.predict_proba(input_data))
-    p_output.columns = ['Fully Paid', 'Charged Off']
+    p_output.columns = ['Fully Paid', 'Default']
     p_output = p_output.multiply(100).round(0).astype(int).astype(str) + '%'
     print(p_output)
 
 
 def main():
-    model_prod_path = '..\\data\\ensemble_model.joblib'
+    model_prod_path = Path('../data/model_nn.h5')
     if not os.path.exists(model_prod_path):
         print('Model not found. Building model...')
         loan_model()
         print('Build complete.')
     # Create input DataFrame
-    input_data = pd.read_csv('..\\data\\input_clean.csv', header=0)
-    # keep_list = ['annual_inc', 'application_type', 'dti', 'delinq_2yrs', 'earliest_cr_line', 'emp_length',
-    #              'home_ownership', 'initial_list_status', 'installment', 'int_rate', 'loan_amnt',
-    #              'loan_status', 'mort_acc', 'open_acc', 'pub_rec', 'pub_rec_bankruptcies', 'purpose',
-    #              'revol_bal', 'revol_util', 'grade', 'term', 'total_acc', 'verification_status']
-    # drop_list = [col for col in input_data.columns if col not in keep_list]
-    # input_data.drop(labels=drop_list, axis=1, inplace=True)
-    # if np.sort(input_data.columns.values) != np.sort(keep_list):
-    #     raise Exception('Columns not correct. Please recheck data')
-    # input_data.to_csv('..\\data\\input_clean.csv')
+    input_data = pd.read_csv(Path('../data/input.csv'), header=0)
+    input_data['loan_status'].replace('Charged Off', 'Default', inplace=True)
+    keep_list = ['annual_inc', 'application_type', 'dti', 'delinq_2yrs', 'earliest_cr_line',
+                 'emp_length', 'home_ownership', 'initial_list_status', 'installment', 'int_rate',
+                 'loan_amnt', 'loan_status', 'mort_acc', 'open_acc', 'pub_rec',
+                 'pub_rec_bankruptcies', 'purpose', 'revol_bal', 'revol_util', 'grade',
+                 'term', 'total_acc', 'verification_status']
+    drop_list = [col for col in input_data.columns if col not in keep_list]
+    input_data.drop(labels=drop_list, axis=1, inplace=True)
+    if np.sort(input_data.columns.values) != np.sort(keep_list):
+        raise Exception('Columns not correct. Please recheck data')
+    input_data.to_csv(Path('../data/input_clean.csv'), index=False)
+    test = input_data.loc[:, input_data.columns == 'loan_status']
+    test['loan_status'].replace('Default', 1, inplace=True)
     input_data = process_na(input_data)
     input_data = process_input(input_data)
     input_data = create_dummies(input_data)
     # Load the Model
-    prod_model = load(model_prod_path)
-    output = prod_model.predict(input_data)
+    scaler = load('..\\data\\scaler.joblib')
+    input_data = scaler.transform(input_data.astype('float64'))
+    prod_model = load_model('..\\data\\model_nn.h5')
+    output = prod_model.predict_classes(input_data)
     print_prediction(input_data, prod_model, output)
+
+    score = prod_model.evaluate(input_data, to_categorical(test))
+    print("Accuracy: %.2f%%" % (score[1]*100))
 
 
 if __name__ == "__main__":
