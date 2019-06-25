@@ -4,14 +4,18 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from joblib import dump, load
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
-from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix, f1_score, classification_report
 from sklearn.ensemble import VotingClassifier
-from joblib import dump, load
+
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.utils import to_categorical
+from keras.models import load_model
 
 
 def plot_var(col_name, title, continuous, dataset, x1limit=False, x2limit=False, x1l=0, x1u=0, x2l=0, x2u=0):
@@ -420,12 +424,7 @@ def loan_model():
     print("Accuracy: %.2f%%" % (rf_most_important.score(x_test_i, y_test) * 100))
 
     # ### Neural Network Model
-    from keras.models import Sequential
-    from keras.layers import Dense
-    from keras.utils import to_categorical
-    from keras.models import load_model
     from sklearn.utils import class_weight
-
     scaler = StandardScaler()
     scaler.fit(x_train.astype('float64'))
     StandardScaler(copy=True, with_mean=True, with_std=True)
@@ -468,8 +467,6 @@ def loan_model():
     print(confusion_matrix(y_test, y_pred_nn))
     print('F1 Score:', f1_score(y_test, y_pred_nn))
     print(classification_report(y_test, y_pred_nn))
-    NN_probs = pd.DataFrame(model_nn.predict(x_test_nn))
-    print(NN_probs.head())
 
     # ### XGBoost Model
     from xgboost import XGBClassifier

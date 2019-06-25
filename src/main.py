@@ -7,6 +7,7 @@ from keras.models import load_model
 from keras.utils import to_categorical
 from src.Loan_Model import loan_model
 from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score
 
 
 def process_na(input_data):
@@ -134,23 +135,81 @@ def create_dummies(input_data):
     return input_data
 
 
-def print_prediction(input_data, prod_model, output):
-    output = pd.DataFrame(output, columns=['Prediction'])
-    output['Prediction'].replace(0, 'Fully Paid', inplace=True)
-    output['Prediction'].replace(1, 'Default', inplace=True)
-    print(output)
-    p_output = pd.DataFrame(prod_model.predict_proba(input_data))
+def ensemble_models(input_data, model_rf_prod_path, model_nn_prod_path, model_xgb_prod_path):
+    # Random Forest Model
+    prod_model_rf = load(model_rf_prod_path)
+    output_rf = prod_model_rf.predict_proba(input_data)
+    output_rf2 = prod_model_rf.predict(input_data)
+
+    # Neural Network Model
+    scaler = load(Path('../data/scaler.joblib'))
+    input_data_nn = scaler.transform(input_data.astype('float64'))
+    prod_model_nn = load_model(str(model_nn_prod_path))
+    output_nn = prod_model_nn.predict(input_data_nn)
+    output_nn2 = prod_model_nn.predict_classes(input_data_nn)
+
+    # XGBoost Model
+    important_indices = ['dti',
+                         'int_rate',
+                         'revol_util',
+                         'log_installment',
+                         'open_acc',
+                         'log_revol_bal',
+                         'mort_acc',
+                         'loan_amnt',
+                         'total_acc',
+                         'log_annual_inc']
+    input_data_xgb = input_data.loc[:, important_indices]
+    prod_model_xgb = load(model_xgb_prod_path)
+    output_xgb = prod_model_xgb.predict_proba(input_data_xgb)
+    output_xgb2 = prod_model_xgb.predict(input_data_xgb)
+
+    # Ensemble output
+    # Avg
+    output = (output_rf + output_nn + output_xgb) / 3
+
+    # Majority vote
+    output2 = pd.DataFrame({'rf': output_rf2, 'nn': output_nn2, 'xgb': output_xgb2})
+    output2['Prediction'] = output2.sum(axis=1)
+    output2.loc[output2['Prediction'] < 2, 'Prediction'] = 0
+    output2.loc[output2['Prediction'] >= 2, 'Prediction'] = 1
+
+    # TODO: Add wegights to each ensemble method based on sensitivty maybe?
+
+    return output, output2
+
+
+def print_prediction(output, true_value, output2):
+    p_output = pd.DataFrame(output)
     p_output.columns = ['Fully Paid', 'Default']
-    p_output = p_output.multiply(100).round(0).astype(int).astype(str) + '%'
-    print(p_output)
+    p_output['Prediction'] = p_output.idxmax(axis=1)
+    p_output['Fully Paid'] = p_output['Fully Paid'].multiply(100).round(0).astype(int).astype(str) + '%'
+    p_output['Default'] = p_output['Default'].multiply(100).round(0).astype(int).astype(str) + '%'
+    print(p_output.head())
+
+    accuracy = accuracy_score(y_true=true_value, y_pred=p_output['Prediction'])
+    print("Accuracy: %.2f%%" % (accuracy * 100))
+
+    # Majority
+    # method is 50.50% on defaults slightly worse on paid
+    p_output2 = pd.DataFrame(output2['Prediction'])
+    p_output2['Prediction'].replace(0, 'Fully Paid', inplace=True)
+    p_output2['Prediction'].replace(1, 'Default', inplace=True)
+    accuracy = accuracy_score(y_true=true_value, y_pred=p_output2['Prediction'])
+    print("\nAccuracy: %.2f%%" % (accuracy * 100))
 
 
 def main():
-    model_prod_path = Path('../data/model_nn.h5')
-    if not os.path.exists(model_prod_path):
-        print('Model not found. Building model...')
-        loan_model()
-        print('Build complete.')
+    model_rf_prod_path = Path('../data/rf_1000.joblib')
+    model_nn_prod_path = Path('../data/model_nn.h5')
+    model_xgb_prod_path = Path('../data/model_xgb.joblib')
+    models_list = [model_rf_prod_path, model_nn_prod_path, model_xgb_prod_path]
+    for item in models_list:
+        if not os.path.exists(item):
+            print('Model not found. Building model...')
+            loan_model()
+            print('Build complete.')
+            break
     # Create input DataFrame
     input_data = pd.read_csv(Path('../data/input.csv'), header=0)
     input_data['loan_status'].replace('Charged Off', 'Default', inplace=True)
@@ -161,23 +220,18 @@ def main():
                  'term', 'total_acc', 'verification_status']
     drop_list = [col for col in input_data.columns if col not in keep_list]
     input_data.drop(labels=drop_list, axis=1, inplace=True)
-    if np.sort(input_data.columns.values) != np.sort(keep_list):
-        raise Exception('Columns not correct. Please recheck data')
+    # if np.array_equal(np.sort(input_data.columns.values), np.sort(keep_list)):
+    #     raise Exception('Incorrect columns. Please recheck data')
     input_data.to_csv(Path('../data/input_clean.csv'), index=False)
     test = input_data.loc[:, input_data.columns == 'loan_status']
-    test['loan_status'].replace('Default', 1, inplace=True)
+    # test['loan_status'].replace('Fully Paid', 0, inplace=True)
+    # test['loan_status'].replace('Default', 1, inplace=True)
     input_data = process_na(input_data)
     input_data = process_input(input_data)
     input_data = create_dummies(input_data)
     # Load the Model
-    scaler = load('..\\data\\scaler.joblib')
-    input_data = scaler.transform(input_data.astype('float64'))
-    prod_model = load_model('..\\data\\model_nn.h5')
-    output = prod_model.predict_classes(input_data)
-    print_prediction(input_data, prod_model, output)
-
-    score = prod_model.evaluate(input_data, to_categorical(test))
-    print("Accuracy: %.2f%%" % (score[1]*100))
+    output, output_maj = ensemble_models(input_data, model_rf_prod_path, model_nn_prod_path, model_xgb_prod_path)
+    print_prediction(output, test, output_maj)
 
 
 if __name__ == "__main__":
