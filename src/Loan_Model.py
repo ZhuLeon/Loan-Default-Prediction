@@ -9,8 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import confusion_matrix, f1_score, classification_report
-from sklearn.ensemble import VotingClassifier
+from sklearn.metrics import confusion_matrix, f1_score, classification_report, accuracy_score
 
 from keras.models import Sequential
 from keras.layers import Dense
@@ -357,7 +356,7 @@ def loan_model():
     # ### Random Forest Model
     model_rf_path = Path('../data/rf_1000.joblib')
     if os.path.exists(model_rf_path):
-        forest = load(model_rf_path)
+        model_rf = load(model_rf_path)
     else:
         n_trees = [50, 100, 250, 500, 1000, 1500, 2500]
         rf_dict = dict.fromkeys(n_trees)
@@ -380,18 +379,18 @@ def loan_model():
         plt.plot(n_trees, oob_error_list, 'bo', n_trees, oob_error_list, 'k')
         # Save model to file
         dump(rf_dict[1000], model_rf_path)
-        forest = rf_dict[1000]
-    y_pred_rf = forest.predict(x_test)
+        model_rf = rf_dict[1000]
+    y_pred_rf = model_rf.predict(x_test)
 
     # ### Random Forest Results
-    print("Accuracy: %.2f%%" % (forest.score(x_test, y_test) * 100))
+    print("Accuracy: %.2f%%" % (model_rf.score(x_test, y_test) * 100))
     print(confusion_matrix(y_test, y_pred_rf))
     print('F1 Score:', f1_score(y_test, y_pred_rf))
     print(classification_report(y_test, y_pred_rf))
 
     feature_list = list(x.columns)
     # Get numerical feature importances
-    importances = list(forest.feature_importances_)
+    importances = list(model_rf.feature_importances_)
     # List of tuples with variable and importance
     feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(feature_list, importances)]
     # Sort the feature importances by most important first
@@ -400,12 +399,12 @@ def loan_model():
     [print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances];
 
     # New random forest with only >= 0.05 important variables
-    rf_most_important = RandomForestClassifier(n_estimators=1000,
-                                               min_samples_leaf=30,
-                                               oob_score=True,
-                                               random_state=100,
-                                               class_weight='balanced',
-                                               n_jobs=2)
+    model_rf_i = RandomForestClassifier(n_estimators=1000,
+                                        min_samples_leaf=30,
+                                        oob_score=True,
+                                        random_state=100,
+                                        class_weight='balanced',
+                                        n_jobs=-1)
     # Extract the important features
     important_indices = ['int_rate',
                          'revol_util',
@@ -418,10 +417,11 @@ def loan_model():
     x_train_i = x_train.loc[:, important_indices]
     x_test_i = x_test.loc[:, important_indices]
     # Train the random forest
-    rf_most_important.fit(x_train_i, y_train.values.ravel())
+    model_rf_i.fit(x_train_i, y_train.values.ravel())
     # Make predictions and determine the error
-    predictions = rf_most_important.predict(x_test_i)
-    print("Accuracy: %.2f%%" % (rf_most_important.score(x_test_i, y_test) * 100))
+    y_pred_rf_i = model_rf_i.predict(x_test_i)
+    print("Accuracy: %.2f%%" % (model_rf_i.score(x_test_i, y_test) * 100))
+    print(confusion_matrix(y_test, y_pred_rf_i))
 
     # ### Neural Network Model
     from sklearn.utils import class_weight
@@ -504,32 +504,31 @@ def loan_model():
     #                                                   select_x_train.shape[1],
     #                                                   accuracy * 100))
 
-    # Extract the two most important features
+    # Extract the ten most important features
     model_path_xgb = Path('../data/model_xgb.joblib')
+    important_indices = ['dti',
+                         'int_rate',
+                         'revol_util',
+                         'log_installment',
+                         'open_acc',
+                         'log_revol_bal',
+                         'mort_acc',
+                         'loan_amnt',
+                         'total_acc',
+                         'log_annual_inc']
+    x_train_xgb = x_train.loc[:, important_indices]
+    x_test_xgb = x_test.loc[:, important_indices]
     if os.path.exists(model_path_xgb):
         model_xgb = load(model_path_xgb)
     else:
-        important_indices = ['dti',
-                             'int_rate',
-                             'revol_util',
-                             'log_installment',
-                             'open_acc',
-                             'log_revol_bal',
-                             'mort_acc',
-                             'loan_amnt',
-                             'total_acc',
-                             'log_annual_inc']
-        x_train_xgb = x_train.loc[:, important_indices]
-        x_test_xgb = x_test.loc[:, important_indices]
-
         model_xgb = XGBClassifier(scale_pos_weight=class_weights[1])
         model_xgb.fit(x_train_xgb, y_train.values.ravel())
-        y_pred_xgb = model_xgb.predict(x_test_xgb)
-        print("Accuracy: %.2f%%" % (model_xgb.score(x_test_xgb, y_test) * 100))
-        print(confusion_matrix(y_test, y_pred_xgb))
-        plot_importance(model_xgb)
-        plt.show()
         dump(model_xgb, model_path_xgb)
+    y_pred_xgb = model_xgb.predict(x_test_xgb)
+    print("Accuracy: %.2f%%" % (model_xgb.score(x_test_xgb, y_test) * 100))
+    print(confusion_matrix(y_test, y_pred_xgb))
+    plot_importance(model_xgb)
+    plt.show()
 
     # ### Support Vector Machine Model
     from sklearn.svm import SVC
@@ -558,20 +557,44 @@ def loan_model():
     # 0.777 C=1 gamma = 1
 
     # ### Ensembled Model
-    # RF_probs = pd.DataFrame(forest.predict_proba(x_test))
-    # LR_probs = pd.DataFrame(lr_model.predict_proba(x_test))
-    # probs
-    ensemble_model_path = Path('../data/ensemble_model.joblib')
-    if os.path.exists(ensemble_model_path):
-        ensemble = load(ensemble_model_path)
-    else:
-        estimators = [('log_reg', model_lr), ('rf', forest)]
-        ensemble = VotingClassifier(estimators, voting='soft', n_jobs=-1)
-        ensemble.fit(x_train, y_train.values.ravel())
-        # Save model to file
-        dump(ensemble, ensemble_model_path)
-    y_pred_ensemble = ensemble.predict(x_test)
+    # Random Forest Model
+    output_rf = model_rf.predict_proba(x_test)
+    output_rf2 = y_pred_rf_i
 
-    # ### Ensembled Results
-    print(confusion_matrix(y_test, y_pred_ensemble))
-    print('Accuracy of ensemble on test set: {:.3f}'.format(ensemble.score(x_test, y_test.values.ravel())))
+    # Neural Network Model
+    output_nn = model_nn.predict(x_test_nn)
+    output_nn2 = y_pred_nn
+
+    # XGBoost Model
+    output_xgb = model_xgb.predict_proba(x_test_xgb)
+    output_xgb2 = y_pred_xgb
+
+    # Ensemble output
+    # Avg
+    output = (output_rf + output_nn + output_xgb) / 3
+
+    # Majority vote
+    output2 = pd.DataFrame({'rf': output_rf2, 'nn': output_nn2, 'xgb': output_xgb2})
+    output2['Prediction'] = output2.sum(axis=1)
+    output2.loc[output2['Prediction'] < 2, 'Prediction'] = 0
+    output2.loc[output2['Prediction'] >= 2, 'Prediction'] = 1
+
+    # ### Ensemble Results
+    p_output = pd.DataFrame(output)
+    p_output.columns = ['Fully Paid', 'Default']
+    p_output['Prediction'] = p_output.idxmax(axis=1)
+    p_output['Fully Paid'] = p_output['Fully Paid'].multiply(100).round(0).astype(int).astype(str) + '%'
+    p_output['Default'] = p_output['Default'].multiply(100).round(0).astype(int).astype(str) + '%'
+    print(p_output.head())
+
+    accuracy = accuracy_score(y_true=y_test, y_pred=p_output['Prediction'])
+    print("Accuracy: %.2f%%" % (accuracy * 100))
+
+    # Majority
+    p_output2 = pd.DataFrame(output2['Prediction'])
+    p_output2['Prediction'].replace(0, 'Fully Paid', inplace=True)
+    p_output2['Prediction'].replace(1, 'Default', inplace=True)
+    print("\n", p_output2.head())
+
+    accuracy = accuracy_score(y_true=y_test, y_pred=p_output2['Prediction'])
+    print("Accuracy: %.2f%%" % (accuracy * 100))
