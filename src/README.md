@@ -7,10 +7,6 @@ from numpy.random import seed
 seed(1)
 from tensorflow import set_random_seed
 set_random_seed(2)
-from numpy.random import seed
-seed(1)
-from tensorflow import set_random_seed
-set_random_seed(2)
 import os
 from pathlib import Path
 import pandas as pd
@@ -21,6 +17,7 @@ from joblib import dump, load
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.inspection import permutation_importance
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import confusion_matrix, f1_score, classification_report, accuracy_score, auc, roc_curve, roc_auc_score, precision_recall_curve
 from sklearn.utils import class_weight
@@ -31,6 +28,9 @@ from keras.layers import Dense
 from keras.utils import to_categorical
 from keras.models import load_model
 ```
+
+    Using TensorFlow backend.
+    
 
 
 ```python
@@ -408,11 +408,11 @@ plot_var('log_annual_inc', 'Log Annual Income', continuous=True, dataset=dataset
     
 
 
-![png](output_14_1.png)
+![png](./imgs/output_14_1.png)
 
 
 
-![png](output_14_2.png)
+![png](./imgs/output_14_2.png)
 
 
 It seems that those with higher annual income are less risk
@@ -435,7 +435,7 @@ plot_var('application_type', 'Application Type', continuous=False, dataset=datas
     
 
 
-![png](output_17_1.png)
+![png](./imgs/output_17_1.png)
 
 
 There does not seem to be a strong correlation between risk and application_type. Both risk around the same percentage.
@@ -462,7 +462,7 @@ plot_var('dti', 'Debt To Income Ratio', continuous=True, dataset=dataset,
     
 
 
-![png](output_20_1.png)
+![png](./imgs/output_20_1.png)
 
 
 It seems that a higher debt to income ratio has a higher probability of charged off
@@ -488,7 +488,7 @@ plot_var('delinq_2yrs', 'Number of Delinquencies', continuous=False, dataset=dat
     
 
 
-![png](output_23_1.png)
+![png](./imgs/output_23_1.png)
 
 
 There seems to be an increasing trend in charge-off rate and increasing number of delinquencies but it is small. Whether or not this is significant remains to be seen.
@@ -518,7 +518,7 @@ plot_var('earliest_cr_line', 'Earliest Credit Line', continuous=True, dataset=da
     
 
 
-![png](output_26_1.png)
+![png](./imgs/output_26_1.png)
 
 
 It seems that those with an earlier credit line are more likely to be less risk
@@ -572,7 +572,7 @@ plot_var('emp_length', 'Employment Length by Year', continuous=False, dataset=da
     
 
 
-![png](output_29_1.png)
+![png](./imgs/output_29_1.png)
 
 
 Doesn't seem to be much of a significant pattern here
@@ -600,7 +600,7 @@ plot_var('home_ownership', 'Home Ownership', continuous=False, dataset=dataset)
     
 
 
-![png](output_32_1.png)
+![png](./imgs/output_32_1.png)
 
 
 Interestingly those with a mortgage are more likely to pay off loans and those who rent are the least likely
@@ -623,7 +623,7 @@ plot_var('initial_list_status', 'Initial List Status', continuous=False, dataset
     
 
 
-![png](output_35_1.png)
+![png](./imgs/output_35_1.png)
 
 
 Theres does not seem to be much information gained from Initial List status
@@ -663,11 +663,11 @@ plot_var('log_installment', 'Log Installment', continuous=True, dataset=dataset)
     
 
 
-![png](output_38_1.png)
+![png](./imgs/output_38_1.png)
 
 
 
-![png](output_38_2.png)
+![png](./imgs/output_38_2.png)
 
 
 It seems those with higher installments are more likely to be charged off
@@ -689,7 +689,7 @@ plot_var('int_rate', 'Interest Rate', continuous=True, dataset=dataset)
     
 
 
-![png](output_41_1.png)
+![png](./imgs/output_41_1.png)
 
 
 There seems to be a much higher interest rate on average for loans that charge off
@@ -715,7 +715,7 @@ plot_var('loan_amnt', 'Loan Amount', continuous=True, dataset=dataset)
     
 
 
-![png](output_44_1.png)
+![png](./imgs/output_44_1.png)
 
 
 It seems charged off loans have a higher loan amount
@@ -757,7 +757,7 @@ plot_var('mort_acc', 'Mortgage Accounts', continuous=True, dataset=dataset)
     
 
 
-![png](output_47_1.png)
+![png](./imgs/output_47_1.png)
 
 
 Currently there does not seem to be a significant difference
@@ -779,7 +779,7 @@ plot_var('open_acc', 'Open Credit Lines', continuous=True, dataset=dataset,
     
 
 
-![png](output_50_1.png)
+![png](./imgs/output_50_1.png)
 
 
 Does not seem to be a good indicator of risk
@@ -803,7 +803,7 @@ plot_var('pub_rec', 'Public Records', continuous=False, dataset=dataset)
     
 
 
-![png](output_53_1.png)
+![png](./imgs/output_53_1.png)
 
 
 Loan default rate does not seem to change much by derogatory public records
@@ -828,7 +828,7 @@ plot_var('pub_rec_bankruptcies', 'Bankruptcies', continuous=False, dataset=datas
     
 
 
-![png](output_56_1.png)
+![png](./imgs/output_56_1.png)
 
 
 Loan default rate does not seem to change much by public bankruptcies records
@@ -897,11 +897,11 @@ plot_var('log_revol_bal', 'Log Revolving Balance in $', continuous=True, dataset
     
 
 
-![png](output_61_1.png)
+![png](./imgs/output_61_1.png)
 
 
 
-![png](output_61_2.png)
+![png](./imgs/output_61_2.png)
 
 
 There is not much difference in the two categories for revolving balances
@@ -923,7 +923,7 @@ plot_var('revol_util', 'Revolving Utility in %', continuous=True, dataset=datase
     
 
 
-![png](output_64_1.png)
+![png](./imgs/output_64_1.png)
 
 
 It seems those with a lower revolving utility are more likely to pay off their loans
@@ -937,7 +937,7 @@ plot_var('grade', 'Grade', continuous=False, dataset=dataset)
 ```
 
 
-![png](output_67_0.png)
+![png](./imgs/output_67_0.png)
 
 
 There seems to be a strong trend between charge off rate and deteriorating grade
@@ -963,7 +963,7 @@ plot_var('term', 'Term (months)', continuous=False, dataset=dataset)
     
 
 
-![png](output_70_1.png)
+![png](./imgs/output_70_1.png)
 
 
 It seems longer term loans have a higher likelihood of being charged off
@@ -984,7 +984,7 @@ plot_var('total_acc', 'Number of Total Accounts', continuous=True, dataset=datas
     
 
 
-![png](output_73_1.png)
+![png](./imgs/output_73_1.png)
 
 
 There does not seem to be a significant difference in charge off rate depending on the total account number
@@ -1009,7 +1009,7 @@ plot_var('verification_status', 'Verification Status', continuous=False, dataset
     
 
 
-![png](output_76_1.png)
+![png](./imgs/output_76_1.png)
 
 
 There seems to be a strong linear trend between charged off rate and verification status. Surprisingly, loans with a status of verified have a higher chance of becoming charged off.
@@ -1346,8 +1346,6 @@ model_lr = LogisticRegression(penalty="l2",
                               solver='lbfgs')
 model_lr = model_lr.fit(x_train, y_train.values.ravel())
 y_pred_lr = model_lr.predict(x_test)
-# df_coefs = pd.DataFrame(model.coef_[0], index=x.columns, columns = ['Coefficient'])
-# df_coefs
 ```
 
 
@@ -1391,7 +1389,7 @@ result.summary2()
   <td>Dependent Variable:</td>    <td>loan_status</td>         <td>AIC:</td>        <td>52469.7036</td>
 </tr>
 <tr>
-         <td>Date:</td>        <td>2019-07-31 15:58</td>       <td>BIC:</td>        <td>52808.8372</td>
+         <td>Date:</td>        <td>2019-08-12 11:15</td>       <td>BIC:</td>        <td>52808.8372</td>
 </tr>
 <tr>
    <td>No. Observations:</td>        <td>44167</td>       <td>Log-Likelihood:</td>    <td>-26196.</td> 
@@ -1611,8 +1609,8 @@ print(classification_report(y_test, y_pred_lr))
 
 
 ```python
-model_rf_path = Path('../data/rf_1000.joblib')
-if os.path.exists(model_rf_path):
+model_rf_path = Path('../data/model_rf.joblib')
+if os.path.exists(model_rf_path): # list of features files does not exist dont save model
     model_rf = load(model_rf_path)
 else:
     n_trees = [50, 100, 250, 500, 1000, 1500, 2500]
@@ -1634,217 +1632,221 @@ else:
         oob_error_list[i] = 1 - rf_dict[n_trees[i]].oob_score_
 
     plt.plot(n_trees, oob_error_list, 'bo', n_trees, oob_error_list, 'k')
-    # Save model to file
-    dump(rf_dict[1000], model_rf_path)
-    model_rf = rf_dict[1000]
-y_pred_rf = model_rf.predict(x_test)
+    model_rf = rf_dict[500]
+    
+    # calculate permutation feature importance
+    result = permutation_importance(model_rf, x_train, y_train, n_repeats=10, random_state=42)
+    perm_sorted_idx = result.importances_mean.argsort()
+
+    fig, ax1 = plt.subplots(figsize=(12, 8))
+    ax1.boxplot(result.importances[perm_sorted_idx].T, vert=False,
+                labels=x_train.columns[perm_sorted_idx])
+    fig.tight_layout()
+    plt.show()
 ```
 
-### Random Forest Results
+    50
+    100
+    250
+    500
+    1000
+    1500
+    2500
+    
+
+
+![png](./imgs/output_95_1.png)
+
+
+
+![png](./imgs/output_95_2.png)
+
+
+This takes over 10 minutes to run.
+By Permutation importance:
+int_rate
+mort_acc
+log_installment
+revol_util
+home_ownership_rent
+dti
+loan_amnt
+log_revol_bal
 
 
 ```python
-print("Accuracy: %.2f%%" % (model_rf.score(x_test, y_test) * 100))
-confusion_matrix(y_test, y_pred_rf)
-print('F1 Score:', f1_score(y_test, y_pred_rf))
-print(classification_report(y_test, y_pred_rf))
-# predict probabilities
-prob = model_rf.predict_proba(x_test)
-# keep probabilities for the positive outcome only
-preds = prob[:,1]
-# calculate roc curve
-fpr, tpr, threshold = roc_curve(y_test, preds)
-# calculate auc, equivalent to roc_auc_score()?
-roc_auc = auc(fpr, tpr)
-print(roc_auc)
-```
-
-    Accuracy: 65.45%
-    F1 Score: 0.5998951232302046
-                  precision    recall  f1-score   support
-    
-               0       0.77      0.64      0.70      8229
-               1       0.53      0.68      0.60      5022
-    
-        accuracy                           0.65     13251
-       macro avg       0.65      0.66      0.65     13251
-    weighted avg       0.68      0.65      0.66     13251
-    
-    0.7249592859591332
-    
-
-
-```python
-feature_list = list(x.columns)
-# Get numerical feature importances
-importances = list(model_rf.feature_importances_)
-# List of tuples with variable and importance
-feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(feature_list, importances)]
-# Sort the feature importances by most important first
-feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
-# Print out the feature and importances 
-[print('Variable: {:20} Importance: {}'.format(*pair)) for pair in feature_importances];
-```
-
-    Variable: int_rate             Importance: 0.3
-    Variable: revol_util           Importance: 0.09
-    Variable: dti                  Importance: 0.07
-    Variable: log_installment      Importance: 0.07
-    Variable: loan_amnt            Importance: 0.05
-    Variable: mort_acc             Importance: 0.04
-    Variable: log_annual_inc       Importance: 0.04
-    Variable: log_revol_bal        Importance: 0.04
-    Variable: term                 Importance: 0.03
-    Variable: total_acc            Importance: 0.03
-    Variable: grade_B              Importance: 0.03
-    Variable: home_ownership_RENT  Importance: 0.03
-    Variable: emp_length           Importance: 0.02
-    Variable: earliest_cr_line     Importance: 0.02
-    Variable: open_acc             Importance: 0.02
-    Variable: grade_C              Importance: 0.02
-    Variable: grade_D              Importance: 0.02
-    Variable: grade_E              Importance: 0.02
-    Variable: verification_status_Verified Importance: 0.02
-    Variable: delinq_2yrs          Importance: 0.01
-    Variable: grade_F              Importance: 0.01
-    Variable: verification_status_Source Verified Importance: 0.01
-    Variable: purpose_debt_consolidation Importance: 0.01
-    Variable: initial_list_status_w Importance: 0.01
-    Variable: grade_G              Importance: 0.0
-    Variable: home_ownership_OWN   Importance: 0.0
-    Variable: purpose_credit_card  Importance: 0.0
-    Variable: purpose_home_improvement Importance: 0.0
-    Variable: purpose_house        Importance: 0.0
-    Variable: purpose_major_purchase Importance: 0.0
-    Variable: purpose_medical      Importance: 0.0
-    Variable: purpose_moving       Importance: 0.0
-    Variable: purpose_other        Importance: 0.0
-    Variable: purpose_renewable_energy Importance: 0.0
-    Variable: purpose_small_business Importance: 0.0
-    Variable: purpose_vacation     Importance: 0.0
-    Variable: application_type_Joint App Importance: 0.0
-    Variable: pub_rec_At least one Importance: 0.0
-    Variable: pub_rec_bankruptcies_At least one Importance: 0.0
-    
-
-
-```python
-# New random forest with only >= 0.05 important variables
-model_rf_i = RandomForestClassifier(n_estimators=1000,
-                                           min_samples_leaf=30,
-                                           oob_score=True,
-                                           random_state=100,
-                                           class_weight='balanced',
-                                           n_jobs=-1)
-# Extract the important features
 important_indices = ['int_rate', 
                      'revol_util',
                      'dti',
                      'log_installment', 
                      'loan_amnt', 
                      'mort_acc', 
-                     'log_annual_inc', 
+                     'home_ownership_RENT',
                      'log_revol_bal']
-x_train_i = x_train.loc[:, important_indices]
-x_test_i = x_test.loc[:, important_indices]
-# Train the random forest
-model_rf_i.fit(x_train_i, y_train.values.ravel())
+x_train_rf = x_train.loc[:, important_indices]
+x_test_rf = x_test.loc[:, important_indices]
 ```
 
+#### Class Sensetive Method
 
 
+```python
+model_rf_path = Path('../data/model_rf.joblib')
+if os.path.exists(model_rf_path):
+    model_rf = load(model_rf_path)
+else:
+    model_rf = RandomForestClassifier(n_estimators=500,
+                                        min_samples_leaf=30,
+                                        oob_score=True,
+                                        random_state=100,
+                                        class_weight='balanced',
+                                        n_jobs=-1)
+    model_rf.fit(x_train_rf, y_train.values.ravel())
+    dump(model_rf, model_rf_path)
+```
 
-    RandomForestClassifier(bootstrap=True, class_weight='balanced',
-                           criterion='gini', max_depth=None, max_features='auto',
-                           max_leaf_nodes=None, min_impurity_decrease=0.0,
-                           min_impurity_split=None, min_samples_leaf=30,
-                           min_samples_split=2, min_weight_fraction_leaf=0.0,
-                           n_estimators=1000, n_jobs=-1, oob_score=True,
-                           random_state=100, verbose=0, warm_start=False)
+#### Sampling - SMOTE Method
 
 
+```python
+model_rf_smote_path = Path('../data/model_rf_smote.joblib')
+if os.path.exists(model_rf_smote_path):
+    model_rf_smote = load(model_rf_smote_path)
+else:
+    x_train_rf_sm, y_train_sm = SMOTE(random_state=1).fit_resample(x_train_rf, y_train.values.ravel())
+    model_rf_smote = RandomForestClassifier(n_estimators=500,
+                                        min_samples_leaf=30,
+                                        oob_score=True,
+                                        random_state=100,
+                                        n_jobs=-1)
+    model_rf_smote.fit(x_train_rf_sm, y_train_sm)
+    dump(model_rf_smote, model_rf_smote_path)
+```
+
+#### Sampling - ADASYN Method
+
+
+```python
+model_rf_adasyn_path = Path('../data/model_rf_adasyn.joblib')
+if os.path.exists(model_rf_adasyn_path):
+    model_rf_adasyn = load_model(model_rf_adasyn_path)
+else:
+    x_train_rf_as, y_train_as = ADASYN(random_state=1).fit_sample(x_train_rf, y_train.values.ravel())
+    model_rf_adasyn = RandomForestClassifier(n_estimators=500,
+                                        min_samples_leaf=30,
+                                        oob_score=True,
+                                        random_state=100,
+                                        n_jobs=-1)
+    model_rf_adasyn.fit(x_train_rf_as, y_train_as)
+    dump(model_rf_adasyn, model_rf_adasyn_path)
+```
+
+### Random Forest Results
+
+#### Cost Sensitive Methods
 
 
 ```python
 # Make predictions and determine the error
-y_pred_rf_i = model_rf_i.predict(x_test_i)
-print("Accuracy: %.2f%%" % (model_rf_i.score(x_test_i, y_test) * 100))
-print(confusion_matrix(y_test, y_pred_rf_i))
-print('F1 Score:', f1_score(y_test, y_pred_rf_i))
-print(classification_report(y_test, y_pred_rf_i))
-# predict probabilities
-prob = model_rf_i.predict_proba(x_test_i)
-# keep probabilities for the positive outcome only
-preds = prob[:,1]
-# calculate roc curve
-fpr, tpr, threshold = roc_curve(y_test, preds)
-# calculate auc, equivalent to roc_auc_score()?
-roc_auc = auc(fpr, tpr)
-print(roc_auc)
-```
-
-    Accuracy: 65.13%
-    [[5177 3052]
-     [1568 3454]]
-    F1 Score: 0.5992366412213741
-                  precision    recall  f1-score   support
-    
-               0       0.77      0.63      0.69      8229
-               1       0.53      0.69      0.60      5022
-    
-        accuracy                           0.65     13251
-       macro avg       0.65      0.66      0.65     13251
-    weighted avg       0.68      0.65      0.66     13251
-    
-    0.7218979714435726
-    
-
-
-```python
-smote = SMOTE('minority')
-x_train_sm, y_train_sm = smote.fit_sample(x_train, y_train.values.ravel())
-model_rf_sm = RandomForestClassifier(n_estimators=1000,
-                                     min_samples_leaf=30,
-                                     oob_score=True,
-                                     random_state=100,
-                                     n_jobs=-1)
-model_rf_sm.fit(x_train_sm, y_train_sm)
-y_pred_rf = model_rf_sm.predict(x_test)
-print("Accuracy: %.2f%%" % (model_rf_i.score(x_test_i, y_test) * 100))
+y_pred_rf = model_rf.predict(x_test_rf)
+print("Accuracy: %.2f%%" % (model_rf.score(x_test_rf, y_test) * 100))
 print(confusion_matrix(y_test, y_pred_rf))
 print('F1 Score:', f1_score(y_test, y_pred_rf))
 print(classification_report(y_test, y_pred_rf))
-```
-
-    Accuracy: 65.13%
-    [[6429 1800]
-     [2486 2536]]
-    F1 Score: 0.5419961530241504
-                  precision    recall  f1-score   support
-    
-               0       0.72      0.78      0.75      8229
-               1       0.58      0.50      0.54      5022
-    
-        accuracy                           0.68     13251
-       macro avg       0.65      0.64      0.65     13251
-    weighted avg       0.67      0.68      0.67     13251
-    
-    
-
-
-```python
 # predict probabilities
-prob = model_rf_sm.predict_proba(x_test)
+prob = model_rf.predict_proba(x_test_rf)
 # keep probabilities for the positive outcome only
 preds = prob[:,1]
 # calculate roc curve
 fpr, tpr, threshold = roc_curve(y_test, preds)
 # calculate auc, equivalent to roc_auc_score()?
-roc_auc = auc(fpr, tpr)
-print(roc_auc)
+print('AUC: ', auc(fpr, tpr))
 ```
 
-    0.7235422374629767
+    Accuracy: 65.60%
+    [[5265 2964]
+     [1595 3427]]
+    F1 Score: 0.6005432401647245
+                  precision    recall  f1-score   support
+    
+               0       0.77      0.64      0.70      8229
+               1       0.54      0.68      0.60      5022
+    
+        accuracy                           0.66     13251
+       macro avg       0.65      0.66      0.65     13251
+    weighted avg       0.68      0.66      0.66     13251
+    
+    AUC:  0.7215493292630665
+    
+
+#### Sampling Methods - SMOTE
+
+
+```python
+y_pred_rf = model_rf_smote.predict(x_test_rf)
+print("Accuracy: %.2f%%" % (model_rf_smote.score(x_test_rf, y_test) * 100))
+print(confusion_matrix(y_test, y_pred_rf))
+print('F1 Score:', f1_score(y_test, y_pred_rf))
+print(classification_report(y_test, y_pred_rf))
+# predict probabilities
+prob = model_rf_smote.predict_proba(x_test_rf)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate roc curve
+fpr, tpr, threshold = roc_curve(y_test, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('AUC: ', auc(fpr, tpr))
+```
+
+    Accuracy: 66.49%
+    [[5922 2307]
+     [2133 2889]]
+    F1 Score: 0.5654726952436876
+                  precision    recall  f1-score   support
+    
+               0       0.74      0.72      0.73      8229
+               1       0.56      0.58      0.57      5022
+    
+        accuracy                           0.66     13251
+       macro avg       0.65      0.65      0.65     13251
+    weighted avg       0.67      0.66      0.67     13251
+    
+    AUC:  0.7174745858773106
+    
+
+#### Sampling Methods - ADASYN
+
+
+```python
+y_pred_rf = model_rf_adasyn.predict(x_test_rf)
+print("Accuracy: %.2f%%" % (model_rf_adasyn.score(x_test_rf, y_test) * 100))
+print(confusion_matrix(y_test, y_pred_rf))
+print('F1 Score:', f1_score(y_test, y_pred_rf))
+print(classification_report(y_test, y_pred_rf))
+# predict probabilities
+prob = model_rf_adasyn.predict_proba(x_test_rf)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate roc curve
+fpr, tpr, threshold = roc_curve(y_test, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('AUC: ', auc(fpr, tpr))
+```
+
+    Accuracy: 66.47%
+    [[5927 2302]
+     [2141 2881]]
+    F1 Score: 0.5646251837334639
+                  precision    recall  f1-score   support
+    
+               0       0.73      0.72      0.73      8229
+               1       0.56      0.57      0.56      5022
+    
+        accuracy                           0.66     13251
+       macro avg       0.65      0.65      0.65     13251
+    weighted avg       0.67      0.66      0.67     13251
+    
+    AUC:  0.716445065457279
     
 
 if you got an AUROC of 0.47, it just means you need to invert the predictions because Scikit-Learn is misinterpreting the positive class. AUROC should be >= 0.5.
@@ -1898,6 +1900,22 @@ else:
 print(model_nn.summary())
 ```
 
+    WARNING:tensorflow:From c:\users\leon\miniconda3\envs\aiml\lib\site-packages\tensorflow\python\framework\op_def_library.py:263: colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Colocations handled automatically by placer.
+    WARNING:tensorflow:From c:\users\leon\miniconda3\envs\aiml\lib\site-packages\tensorflow\python\ops\math_ops.py:3066: to_int32 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use tf.cast instead.
+    Epoch 1/5
+    30916/30916 [==============================] - 10s 336us/step - loss: 0.6058 - acc: 0.6645
+    Epoch 2/5
+    30916/30916 [==============================] - 9s 277us/step - loss: 0.5912 - acc: 0.6767
+    Epoch 3/5
+    30916/30916 [==============================] - 9s 279us/step - loss: 0.5880 - acc: 0.6806
+    Epoch 4/5
+    30916/30916 [==============================] - 9s 276us/step - loss: 0.5862 - acc: 0.6798
+    Epoch 5/5
+    30916/30916 [==============================] - 9s 278us/step - loss: 0.5843 - acc: 0.6846
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
     =================================================================
@@ -1920,28 +1938,31 @@ print(model_nn.summary())
 
 
 ```python
-from keras.models import clone_model
-from keras import layers
-# from keras.layers import get_config
-# from keras.layers import get_weights
-
-if os.path.exists(Path('../data/model_nn2.h5')):
-    model_nn_smote = load_model(str(Path('../data/model_nn2.h5')))
+if os.path.exists(Path('../data/model_nn_smote.h5')):
+    model_nn_smote = load_model(str(Path('../data/model_nn_smote.h5')))
 else:
-    model_nn_smote = clone_model(model_nn)
-    model_nn_smote.set_weights(model_nn.get_weights())
-    smote = SMOTE('minority')
-    x_train_nn_sm, y_train_sm = smote.fit_sample(x_train_nn, y_train.values.ravel())
-    model_nn_smote.compile(loss='binary_crossentropy',
-                    optimizer='adam',
-                    metrics=['accuracy'])
+    x_train_nn_sm, y_train_sm = SMOTE(random_state=1).fit_sample(x_train_nn, y_train.values.ravel())
+    model_nn_smote = load_model(str(model_nn_path))
     model_nn_smote.fit(x_train_nn_sm, to_categorical(y_train_sm), epochs=5, batch_size=10, verbose=0)
-    model_nn_smote.save(str(Path('../data/model_nn2.h5')))
+    model_nn_smote.save(str(Path('../data/model_nn_smote.h5')))
 ```
 
 #### Sampling Method - ADASYN
 
+
+```python
+if os.path.exists(Path('../data/model_nn_adasyn.h5')):
+    model_nn_adasyn = load_model(str(Path('../data/model_nn_adasyn.h5')))
+else:
+    x_train_nn_as, y_train_as = ADASYN(random_state=1).fit_sample(x_train_nn, y_train.values.ravel())
+    model_nn_adasyn = load_model(str(model_nn_path))
+    model_nn_adasyn.fit(x_train_nn_as, to_categorical(y_train_as), epochs=5, batch_size=10, verbose=0)
+    model_nn_adasyn.save(str(Path('../data/model_nn_adasyn.h5')))
+```
+
 ### Neural Network Results
+
+#### Cost Sensentive Method
 
 
 ```python
@@ -1950,11 +1971,11 @@ score = model_nn.evaluate(x_test_nn, to_categorical(y_test))
 print("Accuracy: %.2f%%" % (score[1]*100))
 print(confusion_matrix(y_test, y_pred_nn))
 
-df_cm = pd.DataFrame(confusion_matrix(y_test, y_pred_nn), 
-                      index = ['Fully Paid', 'Default'], 
-                      columns = ['Fully Paid', 'Default'])
-plt.figure(figsize = (10,7))
-sns.heatmap(df_cm, annot=True)
+# df_cm = pd.DataFrame(confusion_matrix(y_test, y_pred_nn), 
+#                       index = ['Fully Paid', 'Default'], 
+#                       columns = ['Fully Paid', 'Default'])
+# plt.figure(figsize = (10,7))
+# sns.heatmap(df_cm, annot=True)
 print('F1 Score:', f1_score(y_test, y_pred_nn))
 print(classification_report(y_test, y_pred_nn))
 # predict probabilities
@@ -1964,28 +1985,25 @@ preds = prob[:,1]
 # calculate roc curve
 fpr, tpr, threshold = roc_curve(y_test, preds)
 # calculate auc, equivalent to roc_auc_score()?
-roc_auc = auc(fpr, tpr)
+print('AUC: ', auc(fpr, tpr))
 ```
 
-    13251/13251 [==============================] - 1s 57us/step
-    Accuracy: 67.23%
-    [[6905 1324]
-     [3015 2007]]
-    F1 Score: 0.4805459116485095
+    13251/13251 [==============================] - 1s 60us/step
+    Accuracy: 67.09%
+    [[6980 1249]
+     [3113 1909]]
+    F1 Score: 0.4667481662591687
                   precision    recall  f1-score   support
     
-               0       0.70      0.84      0.76      8229
-               1       0.60      0.40      0.48      5022
+               0       0.69      0.85      0.76      8229
+               1       0.60      0.38      0.47      5022
     
         accuracy                           0.67     13251
-       macro avg       0.65      0.62      0.62     13251
+       macro avg       0.65      0.61      0.61     13251
     weighted avg       0.66      0.67      0.65     13251
     
+    AUC:  0.7072675101348935
     
-
-
-![png](output_112_1.png)
-
 
 notes
 higher f1 score is good.
@@ -1994,63 +2012,78 @@ so we want to minimize false negative(label was predicted positive and is actual
 so we want to look at recall
 loook at the numbers for 1
 
+#### Sampling Method - SMOTE
+
 
 ```python
-# smote = SMOTE('minority')
-# x_train_nn_sm, y_train_sm = smote.fit_sample(x_train_nn, y_train.values.ravel())
-# model_nn.fit(x_train_nn_sm, to_categorical(y_train_sm), epochs=5, batch_size=10, verbose=0)
-# model_nn.save(str(Path('../data/model_nn2.h5')))
 y_pred_nn = model_nn_smote.predict_classes(x_test_nn)
 score = model_nn_smote.evaluate(x_test_nn, to_categorical(y_test))
 print("Accuracy: %.2f%%" % (score[1]*100))
 print(confusion_matrix(y_test, y_pred_nn))
 print('F1 Score:', f1_score(y_test, y_pred_nn))
 print(classification_report(y_test, y_pred_nn))
+# predict probabilities
+prob = model_nn_smote.predict(x_test_nn)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate roc curve
+fpr, tpr, threshold = roc_curve(y_test, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('AUC: ', auc(fpr, tpr))
 ```
 
-    13251/13251 [==============================] - 1s 50us/step
-    Accuracy: 63.99%
-    [[5058 3171]
-     [1602 3420]]
-    F1 Score: 0.5889950917075691
+    13251/13251 [==============================] - 1s 52us/step
+    Accuracy: 64.83%
+    [[5527 2702]
+     [1955 3067]]
+    F1 Score: 0.5684366601797795
                   precision    recall  f1-score   support
     
-               0       0.76      0.61      0.68      8229
-               1       0.52      0.68      0.59      5022
+               0       0.74      0.67      0.70      8229
+               1       0.53      0.61      0.57      5022
     
-        accuracy                           0.64     13251
-       macro avg       0.64      0.65      0.63     13251
-    weighted avg       0.67      0.64      0.65     13251
+        accuracy                           0.65     13251
+       macro avg       0.64      0.64      0.64     13251
+    weighted avg       0.66      0.65      0.65     13251
     
+    AUC:  0.7020299405425703
     
+
+#### Sampling Method - ADASYN
 
 
 ```python
-x_train_nn_as, y_train_as = ADASYN(random_state=42).fit_sample(x_train_nn, y_train.values.ravel())
-model_nn.fit(x_train_nn_as, to_categorical(y_train_as), epochs=5, batch_size=10, verbose=0)
-model_nn.save(str(Path('../data/model_nn3.h5')))
-y_pred_nn = model_nn.predict_classes(x_test_nn)
-score = model_nn.evaluate(x_test_nn, to_categorical(y_test))
+y_pred_nn = model_nn_adasyn.predict_classes(x_test_nn)
+score = model_nn_adasyn.evaluate(x_test_nn, to_categorical(y_test))
 print("Accuracy: %.2f%%" % (score[1]*100))
 print(confusion_matrix(y_test, y_pred_nn))
 print('F1 Score:', f1_score(y_test, y_pred_nn))
 print(classification_report(y_test, y_pred_nn))
+# predict probabilities
+prob = model_nn_adasyn.predict(x_test_nn)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate roc curve
+fpr, tpr, threshold = roc_curve(y_test, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('AUC: ', auc(fpr, tpr))
 ```
 
-    13251/13251 [==============================] - 0s 23us/step
-    Accuracy: 63.12%
-    [[4958 3271]
-     [1614 3408]]
-    F1 Score: 0.5825143150158106
+    13251/13251 [==============================] - 1s 47us/step
+    Accuracy: 63.13%
+    [[4938 3291]
+     [1595 3427]]
+    F1 Score: 0.5838160136286201
                   precision    recall  f1-score   support
     
-               0       0.75      0.60      0.67      8229
+               0       0.76      0.60      0.67      8229
                1       0.51      0.68      0.58      5022
     
         accuracy                           0.63     13251
        macro avg       0.63      0.64      0.63     13251
     weighted avg       0.66      0.63      0.64     13251
     
+    AUC:  0.698809174496718
     
 
 ### XGBoost Model
@@ -2059,7 +2092,6 @@ print(classification_report(y_test, y_pred_nn))
 ```python
 from xgboost import XGBClassifier
 from xgboost import plot_importance
-from sklearn.utils import class_weight
 class_weights = class_weight.compute_class_weight('balanced', 
                                                   np.unique(y_train.values.ravel()), 
                                                   y_train.values.ravel())
@@ -2096,7 +2128,7 @@ plt.show()
     
 
 
-![png](output_119_1.png)
+![png](./imgs/output_131_1.png)
 
 
 
@@ -2146,6 +2178,8 @@ else:
 y_pred_xgb = model_xgb.predict(x_test_xgb)
 print("Accuracy: %.2f%%" % (model_xgb.score(x_test_xgb, y_test) * 100))
 print(confusion_matrix(y_test, y_pred_xgb))
+print('F1 Score:', f1_score(y_test, y_pred_xgb))
+print(classification_report(y_test, y_pred_xgb))
 plot_importance(model_xgb)
 plt.show()
 ```
@@ -2153,10 +2187,20 @@ plt.show()
     Accuracy: 68.34%
     [[5855 2374]
      [1821 3201]]
+    F1 Score: 0.604133245258092
+                  precision    recall  f1-score   support
+    
+               0       0.76      0.71      0.74      8229
+               1       0.57      0.64      0.60      5022
+    
+        accuracy                           0.68     13251
+       macro avg       0.67      0.67      0.67     13251
+    weighted avg       0.69      0.68      0.69     13251
+    
     
 
 
-![png](output_121_1.png)
+![png](./imgs/output_133_1.png)
 
 
 ### Support Vector Machine Model
@@ -2201,12 +2245,12 @@ plt.show()
 
 ```python
 # Random Forest Model
-output_rf = model_rf.predict_proba(x_test)
-output_rf2 = y_pred_rf_i
+output_rf = model_rf_smote.predict_proba(x_test_rf)
+output_rf2 = model_rf_smote.predict(x_test_rf)
 
 # Neural Network Model
-output_nn = model_nn.predict(x_test_nn)
-output_nn2 = y_pred_nn
+output_nn = model_nn_smote.predict(x_test_nn)
+output_nn2 = model_nn_smote.predict_classes(x_test_nn)
 
 # XGBoost Model
 output_xgb = model_xgb.predict_proba(x_test_xgb)
@@ -2251,29 +2295,29 @@ print("Accuracy: %.2f%%" % (accuracy * 100))
 ```
 
       Fully Paid Default  Prediction
-    0        62%     38%  Fully Paid
-    1        36%     64%     Default
-    2        54%     46%  Fully Paid
-    3        43%     57%     Default
-    4        39%     61%     Default
-    Accuracy: 67.38%
+    0        63%     37%  Fully Paid
+    1        34%     66%     Default
+    2        53%     47%  Fully Paid
+    3        45%     55%     Default
+    4        49%     51%     Default
+    Accuracy: 67.56%
     
         rf  nn  xgb  Prediction
     0   0   0    0  Fully Paid
     1   1   1    1     Default
-    2   1   0    0  Fully Paid
+    2   0   1    0  Fully Paid
     3   1   1    1     Default
     4   1   1    0     Default
-    Accuracy: 66.64%
+    Accuracy: 67.44%
     
 
 
 ```python
 # predict probabilities
-model_rf = load(model_rf_path)
-model_nn = load_model(str(model_nn_path))
+model_rf = load(model_rf_smote_path)
+model_nn = load_model(str(Path('../data/model_nn_smote.h5')))
 model_xgb = load(model_path_xgb)
-pos_pred_rf = model_rf.predict_proba(x_test)
+pos_pred_rf = model_rf.predict_proba(x_test_rf)
 pos_pred_nn = model_nn.predict(x_test_nn)
 pos_pred_xgb = model_xgb.predict_proba(x_test_xgb)
 # keep probabilities for the positive outcome only
@@ -2319,7 +2363,55 @@ plt.show()
 ```
 
 
-![png](output_129_0.png)
+![png](./imgs/output_141_0.png)
+
+
+
+![png](./imgs/output_141_1.png)
+
+
+
+```python
+accu_metrics = pd.DataFrame(p_output.copy())
+accu_metrics['Actual'] = y_test2.to_numpy()
+accu_metrics['category'] = accu_metrics[['Fully Paid', 'Default']].max(axis=1)
+accu_metrics['category'] = accu_metrics['category'].str.rstrip('%').astype('float')
+accu_metrics['proba_range'] = pd.cut(accu_metrics['category'], [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], 
+                           labels=['0-10', '10-20', '20-30', '30-40', '40-50', '50-60', 
+                                   '60-70', '70-80', '80-90', '90-100'], include_lowest=True)
+accu_metrics['correct'] = 0
+accu_metrics.loc[accu_metrics['Prediction'] == accu_metrics['Actual'], 'correct'] = 1
+accu_metric = pd.DataFrame(accu_metrics.groupby('proba_range')['correct'].sum())
+accu_metric['total'] = accu_metrics.groupby(['proba_range']).count()['correct']
+accu_metric['Accuracy'] = accu_metric['correct'] / accu_metric['total'] * 100
+accu_metric.dropna(inplace=True)
+accu_metric.reset_index(inplace=True)
+print(accu_metric)
+f, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12, 3), dpi=90)
+sns.barplot(x='proba_range', y='total', data=accu_metric, ax=ax1)
+ax1.set_xlabel('Prediction Probability Range')
+ax1.set_ylabel('Total')
+ax1.set_title('Amount of prediction in each probability range')
+sns.barplot(x='proba_range', y="Accuracy", data=accu_metric, ax=ax2)
+ax1.set_xticklabels(ax1.get_xticklabels(), rotation=90)
+plt.show()
+# g = sns.barplot(x="proba_range", y="Accuracy", data=accu_metric)
+# g.set_xticklabels(g.get_xticklabels(), rotation=90)
+# plt.show(g)
+
+```
+
+      proba_range  correct  total   Accuracy
+    0       40-50      132    268  49.253731
+    1       50-60     2629   4709  55.829263
+    2       60-70     2633   3981  66.139161
+    3       70-80     2009   2587  77.657518
+    4       80-90     1160   1295  89.575290
+    5      90-100      390    411  94.890511
+    
+
+
+![png](./imgs/output_142_1.png)
 
 
 
