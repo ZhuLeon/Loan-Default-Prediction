@@ -27,10 +27,9 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.utils import to_categorical
 from keras.models import load_model
+from xgboost import XGBClassifier
+from xgboost import plot_importance
 ```
-
-    Using TensorFlow backend.
-    
 
 
 ```python
@@ -1017,7 +1016,7 @@ There seems to be a strong linear trend between charged off rate and verificatio
 # Preliminary Model Design
 
 ### Create dummy variables
-1 means charged-off and 0 means fully paid and create dummy variables for all categorical variables
+1(negative class) means charged-off and 0(positive class) means fully paid and create dummy variables for all categorical variables
 
 
 ```python
@@ -1389,7 +1388,7 @@ result.summary2()
   <td>Dependent Variable:</td>    <td>loan_status</td>         <td>AIC:</td>        <td>52469.7036</td>
 </tr>
 <tr>
-         <td>Date:</td>        <td>2019-08-12 11:15</td>       <td>BIC:</td>        <td>52808.8372</td>
+         <td>Date:</td>        <td>2019-08-16 10:37</td>       <td>BIC:</td>        <td>52808.8372</td>
 </tr>
 <tr>
    <td>No. Observations:</td>        <td>44167</td>       <td>Log-Likelihood:</td>    <td>-26196.</td> 
@@ -1645,23 +1644,6 @@ else:
     plt.show()
 ```
 
-    50
-    100
-    250
-    500
-    1000
-    1500
-    2500
-    
-
-
-![png](./imgs/output_95_1.png)
-
-
-
-![png](./imgs/output_95_2.png)
-
-
 This takes over 10 minutes to run.
 By Permutation importance:
 int_rate
@@ -1729,7 +1711,7 @@ else:
 ```python
 model_rf_adasyn_path = Path('../data/model_rf_adasyn.joblib')
 if os.path.exists(model_rf_adasyn_path):
-    model_rf_adasyn = load_model(model_rf_adasyn_path)
+    model_rf_adasyn = load(model_rf_adasyn_path)
 else:
     x_train_rf_as, y_train_as = ADASYN(random_state=1).fit_sample(x_train_rf, y_train.values.ravel())
     model_rf_adasyn = RandomForestClassifier(n_estimators=500,
@@ -1757,10 +1739,10 @@ print(classification_report(y_test, y_pred_rf))
 prob = model_rf.predict_proba(x_test_rf)
 # keep probabilities for the positive outcome only
 preds = prob[:,1]
-# calculate roc curve
-fpr, tpr, threshold = roc_curve(y_test, preds)
+# calculate pr curve
+precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 # calculate auc, equivalent to roc_auc_score()?
-print('AUC: ', auc(fpr, tpr))
+print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
     Accuracy: 65.60%
@@ -1776,7 +1758,7 @@ print('AUC: ', auc(fpr, tpr))
        macro avg       0.65      0.66      0.65     13251
     weighted avg       0.68      0.66      0.66     13251
     
-    AUC:  0.7215493292630665
+    PR-AUC:  0.5871187852173377
     
 
 #### Sampling Methods - SMOTE
@@ -1792,10 +1774,10 @@ print(classification_report(y_test, y_pred_rf))
 prob = model_rf_smote.predict_proba(x_test_rf)
 # keep probabilities for the positive outcome only
 preds = prob[:,1]
-# calculate roc curve
-fpr, tpr, threshold = roc_curve(y_test, preds)
+# calculate pr curve
+precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 # calculate auc, equivalent to roc_auc_score()?
-print('AUC: ', auc(fpr, tpr))
+print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
     Accuracy: 66.49%
@@ -1811,7 +1793,7 @@ print('AUC: ', auc(fpr, tpr))
        macro avg       0.65      0.65      0.65     13251
     weighted avg       0.67      0.66      0.67     13251
     
-    AUC:  0.7174745858773106
+    PR-AUC:  0.5815688239335299
     
 
 #### Sampling Methods - ADASYN
@@ -1827,10 +1809,10 @@ print(classification_report(y_test, y_pred_rf))
 prob = model_rf_adasyn.predict_proba(x_test_rf)
 # keep probabilities for the positive outcome only
 preds = prob[:,1]
-# calculate roc curve
-fpr, tpr, threshold = roc_curve(y_test, preds)
+# calculate pr curve
+precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 # calculate auc, equivalent to roc_auc_score()?
-print('AUC: ', auc(fpr, tpr))
+print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
     Accuracy: 66.47%
@@ -1846,7 +1828,7 @@ print('AUC: ', auc(fpr, tpr))
        macro avg       0.65      0.65      0.65     13251
     weighted avg       0.67      0.66      0.67     13251
     
-    AUC:  0.716445065457279
+    PR-AUC:  0.5791869756736974
     
 
 if you got an AUROC of 0.47, it just means you need to invert the predictions because Scikit-Learn is misinterpreting the positive class. AUROC should be >= 0.5.
@@ -1907,15 +1889,15 @@ print(model_nn.summary())
     Instructions for updating:
     Use tf.cast instead.
     Epoch 1/5
-    30916/30916 [==============================] - 10s 336us/step - loss: 0.6058 - acc: 0.6645
+    30916/30916 [==============================] - 9s 291us/step - loss: 0.6057 - acc: 0.6654
     Epoch 2/5
-    30916/30916 [==============================] - 9s 277us/step - loss: 0.5912 - acc: 0.6767
+    30916/30916 [==============================] - 7s 223us/step - loss: 0.5911 - acc: 0.6767
     Epoch 3/5
-    30916/30916 [==============================] - 9s 279us/step - loss: 0.5880 - acc: 0.6806
+    30916/30916 [==============================] - 7s 229us/step - loss: 0.5882 - acc: 0.6799
     Epoch 4/5
-    30916/30916 [==============================] - 9s 276us/step - loss: 0.5862 - acc: 0.6798
+    30916/30916 [==============================] - 7s 232us/step - loss: 0.5866 - acc: 0.6800
     Epoch 5/5
-    30916/30916 [==============================] - 9s 278us/step - loss: 0.5843 - acc: 0.6846
+    30916/30916 [==============================] - 7s 227us/step - loss: 0.5849 - acc: 0.6836
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
     =================================================================
@@ -1982,27 +1964,27 @@ print(classification_report(y_test, y_pred_nn))
 prob = model_nn.predict(x_test_nn)
 # keep probabilities for the positive outcome only
 preds = prob[:,1]
-# calculate roc curve
-fpr, tpr, threshold = roc_curve(y_test, preds)
+# calculate pr curve
+precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 # calculate auc, equivalent to roc_auc_score()?
-print('AUC: ', auc(fpr, tpr))
+print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
-    13251/13251 [==============================] - 1s 60us/step
-    Accuracy: 67.09%
-    [[6980 1249]
-     [3113 1909]]
-    F1 Score: 0.4667481662591687
+    13251/13251 [==============================] - 1s 49us/step
+    Accuracy: 66.95%
+    [[6971 1258]
+     [3124 1898]]
+    F1 Score: 0.4641721692345317
                   precision    recall  f1-score   support
     
                0       0.69      0.85      0.76      8229
-               1       0.60      0.38      0.47      5022
+               1       0.60      0.38      0.46      5022
     
         accuracy                           0.67     13251
        macro avg       0.65      0.61      0.61     13251
     weighted avg       0.66      0.67      0.65     13251
     
-    AUC:  0.7072675101348935
+    PR-AUC:  0.5756921141795073
     
 
 notes
@@ -2026,27 +2008,27 @@ print(classification_report(y_test, y_pred_nn))
 prob = model_nn_smote.predict(x_test_nn)
 # keep probabilities for the positive outcome only
 preds = prob[:,1]
-# calculate roc curve
-fpr, tpr, threshold = roc_curve(y_test, preds)
+# calculate pr curve
+precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 # calculate auc, equivalent to roc_auc_score()?
-print('AUC: ', auc(fpr, tpr))
+print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
     13251/13251 [==============================] - 1s 52us/step
-    Accuracy: 64.83%
-    [[5527 2702]
-     [1955 3067]]
-    F1 Score: 0.5684366601797795
+    Accuracy: 65.13%
+    [[5571 2658]
+     [1961 3061]]
+    F1 Score: 0.569965552555628
                   precision    recall  f1-score   support
     
-               0       0.74      0.67      0.70      8229
-               1       0.53      0.61      0.57      5022
+               0       0.74      0.68      0.71      8229
+               1       0.54      0.61      0.57      5022
     
         accuracy                           0.65     13251
        macro avg       0.64      0.64      0.64     13251
-    weighted avg       0.66      0.65      0.65     13251
+    weighted avg       0.66      0.65      0.66     13251
     
-    AUC:  0.7020299405425703
+    PR-AUC:  0.5724683051858237
     
 
 #### Sampling Method - ADASYN
@@ -2063,72 +2045,114 @@ print(classification_report(y_test, y_pred_nn))
 prob = model_nn_adasyn.predict(x_test_nn)
 # keep probabilities for the positive outcome only
 preds = prob[:,1]
-# calculate roc curve
-fpr, tpr, threshold = roc_curve(y_test, preds)
+# calculate pr curve
+precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 # calculate auc, equivalent to roc_auc_score()?
-print('AUC: ', auc(fpr, tpr))
+print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
-    13251/13251 [==============================] - 1s 47us/step
-    Accuracy: 63.13%
-    [[4938 3291]
-     [1595 3427]]
-    F1 Score: 0.5838160136286201
+    13251/13251 [==============================] - 1s 44us/step
+    Accuracy: 63.38%
+    [[5023 3206]
+     [1646 3376]]
+    F1 Score: 0.5818683212685282
                   precision    recall  f1-score   support
     
-               0       0.76      0.60      0.67      8229
-               1       0.51      0.68      0.58      5022
+               0       0.75      0.61      0.67      8229
+               1       0.51      0.67      0.58      5022
     
         accuracy                           0.63     13251
        macro avg       0.63      0.64      0.63     13251
     weighted avg       0.66      0.63      0.64     13251
     
-    AUC:  0.698809174496718
+    PR-AUC:  0.5682798417814128
     
 
 ### XGBoost Model
 
 
 ```python
-from xgboost import XGBClassifier
-from xgboost import plot_importance
 class_weights = class_weight.compute_class_weight('balanced', 
                                                   np.unique(y_train.values.ravel()), 
                                                   y_train.values.ravel())
-model_xgb = XGBClassifier(scale_pos_weight=class_weights[1]) # random state?
-model_xgb.fit(x_train, y_train.values.ravel())
-y_pred_xgb = model_xgb.predict(x_test)
+model_xgb = XGBClassifier(max_depth=3,
+                          learning_rate=0.05,
+                          n_estimators=300,
+                          objective='binary:logistic',
+                          subsample=0.8,
+                          scale_pos_weight=class_weights[1], # this may be a problem.
+                          random_state=42)
+eval_set = [(x_train, y_train), (x_test, y_test)]
+eval_metric = ['auc', 'error']
+model_xgb.fit(x_train, y_train.values.ravel(), eval_metric=eval_metric, eval_set=eval_set, 
+              verbose=False)
 ```
+
+    c:\users\leon\miniconda3\envs\aiml\lib\site-packages\sklearn\preprocessing\label.py:260: DataConversionWarning: A column-vector y was passed when a 1d array was expected. Please change the shape of y to (n_samples, ), for example using ravel().
+      y = column_or_1d(y, warn=True)
+    
+
+
+```python
+results = model_xgb.evals_result()
+epochs = len(results['validation_0']['error'])
+x_axis = range(0, epochs)
+
+f, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12, 3), dpi=90)
+ax1.plot(x_axis, results['validation_0']['auc'], label='Train')
+ax1.plot(x_axis, results['validation_1']['auc'], label='Test')
+ax1.legend()
+ax1.set_ylabel('AUC')
+ax1.set_title('XGBoost AUC')
+
+ax2.plot(x_axis, results['validation_0']['error'], label='Train')
+ax2.plot(x_axis, results['validation_1']['error'], label='Test')
+ax2.legend()
+ax2.set_ylabel('Classification Error')
+ax2.set_title('XGBoost Classifcation Error')
+plt.show()
+
+plot_importance(model_xgb)
+plt.show()
+```
+
+
+![png](./imgs/output_130_0.png)
+
 
 ### XGBoost Results
 
 
 ```python
+# TODO: add SMOTE and ADASYN to XGBoost
+```
+
+
+```python
+y_pred_xgb = model_xgb.predict(x_test)
 print("Accuracy: %.2f%%" % (model_xgb.score(x_test, y_test) * 100))
 print(confusion_matrix(y_test, y_pred_xgb))
 print('F1 Score:', f1_score(y_test, y_pred_xgb))
 print(classification_report(y_test, y_pred_xgb))
-plot_importance(model_xgb)
-plt.show()
 ```
 
-    Accuracy: 67.93%
-    [[5899 2330]
-     [1920 3102]]
-    F1 Score: 0.5934570499330399
+    Accuracy: 68.92%
+    [[5983 2246]
+     [1873 3149]]
+    F1 Score: 0.6045886531630987
                   precision    recall  f1-score   support
     
-               0       0.75      0.72      0.74      8229
-               1       0.57      0.62      0.59      5022
+               0       0.76      0.73      0.74      8229
+               1       0.58      0.63      0.60      5022
     
-        accuracy                           0.68     13251
-       macro avg       0.66      0.67      0.66     13251
-    weighted avg       0.68      0.68      0.68     13251
+        accuracy                           0.69     13251
+       macro avg       0.67      0.68      0.67     13251
+    weighted avg       0.69      0.69      0.69     13251
     
     
 
 
-![png](./imgs/output_131_1.png)
+![png](./imgs/output_133_1.png)
 
 
 
@@ -2172,7 +2196,13 @@ x_test_xgb = x_test.loc[:, important_indices]
 if os.path.exists(model_path_xgb):
     model_xgb = load(model_path_xgb)
 else:
-    model_xgb = XGBClassifier(scale_pos_weight=class_weights[1])
+    model_xgb = XGBClassifier(max_depth=3,
+                              learning_rate=0.05,
+                              n_estimators=300,
+                              objective='binary:logistic',
+                              subsample=0.8,
+                              scale_pos_weight=class_weights[1], 
+                              random_state=42)
     model_xgb.fit(x_train_xgb, y_train.values.ravel())
     dump(model_xgb, model_path_xgb)
 y_pred_xgb = model_xgb.predict(x_test_xgb)
@@ -2200,7 +2230,7 @@ plt.show()
     
 
 
-![png](./imgs/output_133_1.png)
+![png](./imgs/output_135_1.png)
 
 
 ### Support Vector Machine Model
@@ -2254,7 +2284,7 @@ output_nn2 = model_nn_smote.predict_classes(x_test_nn)
 
 # XGBoost Model
 output_xgb = model_xgb.predict_proba(x_test_xgb)
-output_xgb2 = y_pred_xgb
+output_xgb2 = model_xgb.predict(x_test_xgb)
 
 # Ensemble output
 # Avg
@@ -2276,7 +2306,6 @@ p_output.columns = ['Fully Paid', 'Default']
 p_output['Prediction'] = p_output.idxmax(axis=1)
 p_output['Fully Paid'] = p_output['Fully Paid'].multiply(100).round(0).astype(int).astype(str) + '%'
 p_output['Default'] = p_output['Default'].multiply(100).round(0).astype(int).astype(str) + '%'
-print(p_output.head())
 
 y_test2 = pd.DataFrame(y_test.copy())
 y_test2.columns = ['Prediction']
@@ -2284,6 +2313,8 @@ y_test2['Prediction'].replace(0, 'Fully Paid', inplace=True)
 y_test2['Prediction'].replace(1, 'Default', inplace=True)
 accuracy = accuracy_score(y_true=y_test2, y_pred=p_output['Prediction'])
 print("Accuracy: %.2f%%" % (accuracy * 100))
+print(confusion_matrix(y_test2, p_output['Prediction']))
+print(classification_report(y_test2, p_output['Prediction']))
 
 # Majority
 output2['Prediction'].replace(0, 'Fully Paid', inplace=True)
@@ -2292,23 +2323,47 @@ print("\n", output2.head())
 
 accuracy = accuracy_score(y_true=y_test2, y_pred=output2['Prediction'])
 print("Accuracy: %.2f%%" % (accuracy * 100))
+print(confusion_matrix(y_test2, output2['Prediction']))
+print(classification_report(y_test2, output2['Prediction']))
 ```
 
       Fully Paid Default  Prediction
-    0        63%     37%  Fully Paid
+    0        60%     40%  Fully Paid
     1        34%     66%     Default
-    2        53%     47%  Fully Paid
+    2        56%     44%  Fully Paid
     3        45%     55%     Default
-    4        49%     51%     Default
-    Accuracy: 67.56%
+    4        53%     47%  Fully Paid
+    Accuracy: 67.50%
+    [[3054 1968]
+     [2338 5891]]
+                  precision    recall  f1-score   support
+    
+         Default       0.57      0.61      0.59      5022
+      Fully Paid       0.75      0.72      0.73      8229
+    
+        accuracy                           0.68     13251
+       macro avg       0.66      0.66      0.66     13251
+    weighted avg       0.68      0.68      0.68     13251
+    
     
         rf  nn  xgb  Prediction
     0   0   0    0  Fully Paid
     1   1   1    1     Default
-    2   0   1    0  Fully Paid
+    2   0   0    0  Fully Paid
     3   1   1    1     Default
-    4   1   1    0     Default
-    Accuracy: 67.44%
+    4   1   0    0  Fully Paid
+    Accuracy: 67.38%
+    [[3054 1968]
+     [2354 5875]]
+                  precision    recall  f1-score   support
+    
+         Default       0.56      0.61      0.59      5022
+      Fully Paid       0.75      0.71      0.73      8229
+    
+        accuracy                           0.67     13251
+       macro avg       0.66      0.66      0.66     13251
+    weighted avg       0.68      0.67      0.68     13251
+    
     
 
 
@@ -2333,41 +2388,35 @@ roc_auc_rf = auc(fpr_rf, tpr_rf)
 roc_auc_nn = auc(fpr_nn, tpr_nn)
 roc_auc_xgb = auc(fpr_xgb, tpr_xgb)
 
-plt.title('Receiver Operating Characteristic')
-plt.plot(fpr_rf, tpr_rf, 'r', label = 'RF AUC = %0.2f' % roc_auc_rf)
-plt.plot(fpr_nn, tpr_nn, 'b', label = 'NN AUC = %0.2f' % roc_auc_nn)
-plt.plot(fpr_xgb, tpr_xgb, color='yellow', label = 'XGB AUC = %0.2f' % roc_auc_xgb)
-plt.legend(loc = 'lower right')
-plt.plot([0, 1], [0, 1], 'g--')
-plt.xlim([0, 1])
-plt.ylim([0, 1])
-plt.ylabel('True Positive Rate')
-plt.xlabel('False Positie Rate')
-plt.show()
+f, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12, 3), dpi=90)
+ax1.set_title('Receiver Operating Characteristic')
+ax1.plot(fpr_rf, tpr_rf, 'r', label = 'RF AUC = %0.2f' % roc_auc_rf)
+ax1.plot(fpr_nn, tpr_nn, 'b', label = 'NN AUC = %0.2f' % roc_auc_nn)
+ax1.plot(fpr_xgb, tpr_xgb, color='yellow', label = 'XGB AUC = %0.2f' % roc_auc_xgb)
+ax1.legend(loc = 'lower right')
+ax1.plot([0, 1], [0, 1], 'g--')
+ax1.set_ylabel('True Positive Rate')
+ax1.set_xlabel('False Positie Rate')
 
 precision_rf, recall_rf, threshold = precision_recall_curve(y_test, pos_pred_rf)
 precision_nn, recall_nn, threshold = precision_recall_curve(y_test, pos_pred_nn)
 precision_xgb, recall_xgb, threshold = precision_recall_curve(y_test, pos_pred_xgb)
-roc_auc_rf = auc(recall_rf, precision_rf)
-roc_auc_nn = auc(recall_nn, precision_nn)
-roc_auc_xgb = auc(recall_xgb, precision_xgb)
-plt.title('Precision-Recall Curve')
-plt.plot(recall_rf, precision_rf, 'r', label = 'RF AUC = %0.2f' % roc_auc_rf)
-plt.plot(recall_nn, precision_nn, 'b', label = 'NN AUC = %0.2f' % roc_auc_nn)
-plt.plot(recall_xgb, precision_xgb, 'y', label = 'XGB AUC = %0.2f' % roc_auc_xgb)
-plt.legend(loc = 'upper right')
-plt.plot([0, 1], [0.4, 0.4], 'r--')
-plt.ylabel('Precision')
-plt.xlabel('Recall')
+pr_auc_rf = auc(recall_rf, precision_rf)
+pr_auc_nn = auc(recall_nn, precision_nn)
+pr_auc_xgb = auc(recall_xgb, precision_xgb)
+ax2.set_title('Precision-Recall Curve')
+ax2.plot(recall_rf, precision_rf, 'r', label = 'RF AUC = %0.2f' % pr_auc_rf)
+ax2.plot(recall_nn, precision_nn, 'b', label = 'NN AUC = %0.2f' % pr_auc_nn)
+ax2.plot(recall_xgb, precision_xgb, 'y', label = 'XGB AUC = %0.2f' % pr_auc_xgb)
+ax2.legend(loc = 'upper right')
+ax2.plot([0, 1], [0.4, 0.4], 'r--')
+ax2.set_ylabel('Precision')
+ax2.set_xlabel('Recall')
 plt.show()
 ```
 
 
-![png](./imgs/output_141_0.png)
-
-
-
-![png](./imgs/output_141_1.png)
+![png](./imgs/output_143_0.png)
 
 
 
@@ -2386,32 +2435,21 @@ accu_metric['total'] = accu_metrics.groupby(['proba_range']).count()['correct']
 accu_metric['Accuracy'] = accu_metric['correct'] / accu_metric['total'] * 100
 accu_metric.dropna(inplace=True)
 accu_metric.reset_index(inplace=True)
-print(accu_metric)
+
 f, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12, 3), dpi=90)
 sns.barplot(x='proba_range', y='total', data=accu_metric, ax=ax1)
 ax1.set_xlabel('Prediction Probability Range')
-ax1.set_ylabel('Total')
+ax1.set_ylabel('Frequency')
 ax1.set_title('Amount of prediction in each probability range')
-sns.barplot(x='proba_range', y="Accuracy", data=accu_metric, ax=ax2)
 ax1.set_xticklabels(ax1.get_xticklabels(), rotation=90)
+sns.barplot(x='proba_range', y="Accuracy", data=accu_metric, ax=ax2)
+ax2.set_xlabel('Prediction Probability Range')
+ax2.set_xticklabels(ax2.get_xticklabels(), rotation=90)
 plt.show()
-# g = sns.barplot(x="proba_range", y="Accuracy", data=accu_metric)
-# g.set_xticklabels(g.get_xticklabels(), rotation=90)
-# plt.show(g)
-
 ```
 
-      proba_range  correct  total   Accuracy
-    0       40-50      132    268  49.253731
-    1       50-60     2629   4709  55.829263
-    2       60-70     2633   3981  66.139161
-    3       70-80     2009   2587  77.657518
-    4       80-90     1160   1295  89.575290
-    5      90-100      390    411  94.890511
-    
 
-
-![png](./imgs/output_142_1.png)
+![png](./imgs/output_144_0.png)
 
 
 
