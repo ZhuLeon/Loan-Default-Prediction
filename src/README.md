@@ -417,11 +417,11 @@ plot_var('log_annual_inc', 'Log Annual Income', continuous=True, dataset=dataset
     
 
 
-![png](output_14_1.png)
+![png](./imgs/output_14_1.png)
 
 
 
-![png](output_14_2.png)
+![png](./imgs/output_14_2.png)
 
 
 It seems that those with higher annual income are less risk
@@ -444,7 +444,7 @@ plot_var('application_type', 'Application Type', continuous=False, dataset=datas
     
 
 
-![png](output_17_1.png)
+![png](./imgs/output_17_1.png)
 
 
 There does not seem to be a strong correlation between risk and application_type. Both risk around the same percentage.
@@ -471,7 +471,7 @@ plot_var('dti', 'Debt To Income Ratio', continuous=True, dataset=dataset,
     
 
 
-![png](output_20_1.png)
+![png](./imgs/output_20_1.png)
 
 
 It seems that a higher debt to income ratio has a higher probability of charged off
@@ -497,7 +497,7 @@ plot_var('delinq_2yrs', 'Number of Delinquencies', continuous=False, dataset=dat
     
 
 
-![png](output_23_1.png)
+![png](./imgs/output_23_1.png)
 
 
 There seems to be an increasing trend in charge-off rate and increasing number of delinquencies but it is small. Whether or not this is significant remains to be seen.
@@ -527,7 +527,7 @@ plot_var('earliest_cr_line', 'Earliest Credit Line', continuous=True, dataset=da
     
 
 
-![png](output_26_1.png)
+![png](./imgs/output_26_1.png)
 
 
 Surprisingly, when a person first obtained credit seems irrelevant.
@@ -581,7 +581,7 @@ plot_var('emp_length', 'Employment Length by Year', continuous=False, dataset=da
     
 
 
-![png](output_29_1.png)
+![png](./imgs/output_29_1.png)
 
 
 Doesn't seem to be much of a significant pattern here
@@ -632,7 +632,7 @@ plot_var('initial_list_status', 'Initial List Status', continuous=False, dataset
     
 
 
-![png](output_35_1.png)
+![png](./imgs/output_35_1.png)
 
 
 Theres does not seem to be much information gained from Initial List status
@@ -672,11 +672,11 @@ plot_var('log_installment', 'Log Installment', continuous=True, dataset=dataset)
     
 
 
-![png](output_38_1.png)
+![png](./imgs/output_38_1.png)
 
 
 
-![png](output_38_2.png)
+![png](./imgs/output_38_2.png)
 
 
 It seems those with higher installments are more likely to be charged off
@@ -698,7 +698,7 @@ plot_var('int_rate', 'Interest Rate', continuous=True, dataset=dataset)
     
 
 
-![png](output_41_1.png)
+![png](./imgs/output_41_1.png)
 
 
 There seems to be a much higher interest rate on average for loans that charge off
@@ -724,7 +724,7 @@ plot_var('loan_amnt', 'Loan Amount', continuous=True, dataset=dataset)
     
 
 
-![png](output_44_1.png)
+![png](./imgs/output_44_1.png)
 
 
 It seems charged off loans have a higher loan amount
@@ -766,7 +766,7 @@ plot_var('mort_acc', 'Mortgage Accounts', continuous=True, dataset=dataset)
     
 
 
-![png](output_47_1.png)
+![png](./imgs/output_47_1.png)
 
 
 Currently there does not seem to be a significant difference
@@ -788,7 +788,7 @@ plot_var('open_acc', 'Open Credit Lines', continuous=True, dataset=dataset,
     
 
 
-![png](output_50_1.png)
+![png](./imgs/output_50_1.png)
 
 
 Does not seem to be a good indicator of risk
@@ -812,7 +812,7 @@ plot_var('pub_rec', 'Public Records', continuous=False, dataset=dataset)
     
 
 
-![png](output_53_1.png)
+![png](./imgs/output_53_1.png)
 
 
 Loan default rate does not seem to change much by derogatory public records
@@ -837,7 +837,7 @@ plot_var('pub_rec_bankruptcies', 'Bankruptcies', continuous=False, dataset=datas
     
 
 
-![png](output_56_1.png)
+![png](./imgs/output_56_1.png)
 
 
 Loan default rate does not seem to change much by public bankruptcies records
@@ -906,11 +906,11 @@ plot_var('log_revol_bal', 'Log Revolving Balance in $', continuous=True, dataset
     
 
 
-![png](output_61_1.png)
+![png](./imgs/output_61_1.png)
 
 
 
-![png](output_61_2.png)
+![png](./imgs/output_61_2.png)
 
 
 There is not much difference in the two categories for revolving balances
@@ -932,7 +932,7 @@ plot_var('revol_util', 'Revolving Utility in %', continuous=True, dataset=datase
     
 
 
-![png](output_64_1.png)
+![png](./imgs/output_64_1.png)
 
 
 It seems those with a lower revolving utility are more likely to pay off their loans
@@ -946,7 +946,7 @@ plot_var('grade', 'Grade', continuous=False, dataset=dataset)
 ```
 
 
-![png](output_67_0.png)
+![png](./imgs/output_67_0.png)
 
 
 There seems to be a strong trend between charge off rate and deteriorating grade
@@ -972,7 +972,7 @@ plot_var('term', 'Term (months)', continuous=False, dataset=dataset)
     
 
 
-![png](output_70_1.png)
+![png](./imgs/output_70_1.png)
 
 
 Loan Duration or how long to maturity seems to be important and a good indicator of risk of default. A longer duration has a higher risk that the loan will not be repaid.  
@@ -993,7 +993,7 @@ plot_var('total_acc', 'Number of Total Accounts', continuous=True, dataset=datas
     
 
 
-![png](output_73_1.png)
+![png](./imgs/output_73_1.png)
 
 
 There does not seem to be a significant difference in charge off rate depending on the total account number
@@ -1018,7 +1018,7 @@ plot_var('verification_status', 'Verification Status', continuous=False, dataset
     
 
 
-![png](output_76_1.png)
+![png](./imgs/output_76_1.png)
 
 
 There seems to be a strong linear trend between charged off rate and verification status. Surprisingly, loans with a status of verified have a higher chance of becoming charged off.
@@ -1975,11 +1975,11 @@ else:
     
 
 
-![png](output_109_1.png)
+![png](./imgs/output_109_1.png)
 
 
 
-![png](output_109_2.png)
+![png](./imgs/output_109_2.png)
 
 
 
@@ -2520,11 +2520,11 @@ plt.show()
 ```
 
 
-![png](output_146_0.png)
+![png](./imgs/output_146_0.png)
 
 
 
-![png](output_146_1.png)
+![png](./imgs/output_146_1.png)
 
 
 
@@ -3119,7 +3119,7 @@ plt.show()
 ```
 
 
-![png](output_177_0.png)
+![png](./imgs/output_177_0.png)
 
 
 
@@ -3154,7 +3154,7 @@ plt.show()
 ```
 
 
-![png](output_178_0.png)
+![png](./imgs/output_178_0.png)
 
 
 
