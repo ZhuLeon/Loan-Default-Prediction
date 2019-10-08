@@ -126,6 +126,7 @@ dataset.head()
       <th>revol_util</th>
       <th>total_acc</th>
       <th>initial_list_status</th>
+      <th>total_pymnt</th>
       <th>application_type</th>
       <th>mort_acc</th>
       <th>pub_rec_bankruptcies</th>
@@ -154,6 +155,7 @@ dataset.head()
       <td>13.20%</td>
       <td>25</td>
       <td>w</td>
+      <td>5385.245133</td>
       <td>Individual</td>
       <td>1</td>
       <td>0</td>
@@ -180,6 +182,7 @@ dataset.head()
       <td>27.20%</td>
       <td>27</td>
       <td>w</td>
+      <td>7642.289180</td>
       <td>Individual</td>
       <td>4</td>
       <td>0</td>
@@ -206,6 +209,7 @@ dataset.head()
       <td>48.60%</td>
       <td>44</td>
       <td>w</td>
+      <td>10283.629660</td>
       <td>Individual</td>
       <td>3</td>
       <td>0</td>
@@ -232,6 +236,7 @@ dataset.head()
       <td>0.30%</td>
       <td>12</td>
       <td>w</td>
+      <td>2097.014574</td>
       <td>Individual</td>
       <td>0</td>
       <td>0</td>
@@ -258,6 +263,7 @@ dataset.head()
       <td>98.90%</td>
       <td>5</td>
       <td>w</td>
+      <td>7206.461000</td>
       <td>Individual</td>
       <td>0</td>
       <td>0</td>
@@ -282,7 +288,7 @@ print(dataset.shape)
     Fully Paid    0.611789
     Default       0.388211
     Name: loan_status, dtype: float64
-    (47639, 23)
+    (47639, 24)
     
 
 | Status     | Count | Percentage |
@@ -339,6 +345,7 @@ print(dataset.dtypes)
     revol_util               object
     total_acc                 int64
     initial_list_status      object
+    total_pymnt             float64
     application_type         object
     mort_acc                  int64
     pub_rec_bankruptcies      int64
@@ -410,11 +417,11 @@ plot_var('log_annual_inc', 'Log Annual Income', continuous=True, dataset=dataset
     
 
 
-![png](./imgs/output_14_1.png)
+![png](output_14_1.png)
 
 
 
-![png](./imgs/output_14_2.png)
+![png](output_14_2.png)
 
 
 It seems that those with higher annual income are less risk
@@ -437,7 +444,7 @@ plot_var('application_type', 'Application Type', continuous=False, dataset=datas
     
 
 
-![png](./imgs/output_17_1.png)
+![png](output_17_1.png)
 
 
 There does not seem to be a strong correlation between risk and application_type. Both risk around the same percentage.
@@ -464,7 +471,7 @@ plot_var('dti', 'Debt To Income Ratio', continuous=True, dataset=dataset,
     
 
 
-![png](./imgs/output_20_1.png)
+![png](output_20_1.png)
 
 
 It seems that a higher debt to income ratio has a higher probability of charged off
@@ -490,7 +497,7 @@ plot_var('delinq_2yrs', 'Number of Delinquencies', continuous=False, dataset=dat
     
 
 
-![png](./imgs/output_23_1.png)
+![png](output_23_1.png)
 
 
 There seems to be an increasing trend in charge-off rate and increasing number of delinquencies but it is small. Whether or not this is significant remains to be seen.
@@ -520,7 +527,7 @@ plot_var('earliest_cr_line', 'Earliest Credit Line', continuous=True, dataset=da
     
 
 
-![png](./imgs/output_26_1.png)
+![png](output_26_1.png)
 
 
 Surprisingly, when a person first obtained credit seems irrelevant.
@@ -574,7 +581,7 @@ plot_var('emp_length', 'Employment Length by Year', continuous=False, dataset=da
     
 
 
-![png](./imgs/output_29_1.png)
+![png](output_29_1.png)
 
 
 Doesn't seem to be much of a significant pattern here
@@ -592,11 +599,11 @@ plot_var('home_ownership', 'Home Ownership', continuous=False, dataset=dataset)
 ```
 
     loan_status  home_ownership
-    Default      RENT               8466
-                 MORTGAGE           7816
+    Default      RENT               8501
+                 MORTGAGE           7781
                  OWN                2212
-    Fully Paid   MORTGAGE          15653
-                 RENT              10147
+    Fully Paid   MORTGAGE          15652
+                 RENT              10148
                  OWN                3345
     Name: home_ownership, dtype: int64
     
@@ -625,7 +632,7 @@ plot_var('initial_list_status', 'Initial List Status', continuous=False, dataset
     
 
 
-![png](./imgs/output_35_1.png)
+![png](output_35_1.png)
 
 
 Theres does not seem to be much information gained from Initial List status
@@ -665,11 +672,11 @@ plot_var('log_installment', 'Log Installment', continuous=True, dataset=dataset)
     
 
 
-![png](./imgs/output_38_1.png)
+![png](output_38_1.png)
 
 
 
-![png](./imgs/output_38_2.png)
+![png](output_38_2.png)
 
 
 It seems those with higher installments are more likely to be charged off
@@ -691,7 +698,7 @@ plot_var('int_rate', 'Interest Rate', continuous=True, dataset=dataset)
     
 
 
-![png](./imgs/output_41_1.png)
+![png](output_41_1.png)
 
 
 There seems to be a much higher interest rate on average for loans that charge off
@@ -717,7 +724,7 @@ plot_var('loan_amnt', 'Loan Amount', continuous=True, dataset=dataset)
     
 
 
-![png](./imgs/output_44_1.png)
+![png](output_44_1.png)
 
 
 It seems charged off loans have a higher loan amount
@@ -759,7 +766,7 @@ plot_var('mort_acc', 'Mortgage Accounts', continuous=True, dataset=dataset)
     
 
 
-![png](./imgs/output_47_1.png)
+![png](output_47_1.png)
 
 
 Currently there does not seem to be a significant difference
@@ -781,7 +788,7 @@ plot_var('open_acc', 'Open Credit Lines', continuous=True, dataset=dataset,
     
 
 
-![png](./imgs/output_50_1.png)
+![png](output_50_1.png)
 
 
 Does not seem to be a good indicator of risk
@@ -805,7 +812,7 @@ plot_var('pub_rec', 'Public Records', continuous=False, dataset=dataset)
     
 
 
-![png](./imgs/output_53_1.png)
+![png](output_53_1.png)
 
 
 Loan default rate does not seem to change much by derogatory public records
@@ -830,7 +837,7 @@ plot_var('pub_rec_bankruptcies', 'Bankruptcies', continuous=False, dataset=datas
     
 
 
-![png](./imgs/output_56_1.png)
+![png](output_56_1.png)
 
 
 Loan default rate does not seem to change much by public bankruptcies records
@@ -899,11 +906,11 @@ plot_var('log_revol_bal', 'Log Revolving Balance in $', continuous=True, dataset
     
 
 
-![png](./imgs/output_61_1.png)
+![png](output_61_1.png)
 
 
 
-![png](./imgs/output_61_2.png)
+![png](output_61_2.png)
 
 
 There is not much difference in the two categories for revolving balances
@@ -925,7 +932,7 @@ plot_var('revol_util', 'Revolving Utility in %', continuous=True, dataset=datase
     
 
 
-![png](./imgs/output_64_1.png)
+![png](output_64_1.png)
 
 
 It seems those with a lower revolving utility are more likely to pay off their loans
@@ -939,7 +946,7 @@ plot_var('grade', 'Grade', continuous=False, dataset=dataset)
 ```
 
 
-![png](./imgs/output_67_0.png)
+![png](output_67_0.png)
 
 
 There seems to be a strong trend between charge off rate and deteriorating grade
@@ -965,7 +972,7 @@ plot_var('term', 'Term (months)', continuous=False, dataset=dataset)
     
 
 
-![png](./imgs/output_70_1.png)
+![png](output_70_1.png)
 
 
 Loan Duration or how long to maturity seems to be important and a good indicator of risk of default. A longer duration has a higher risk that the loan will not be repaid.  
@@ -986,7 +993,7 @@ plot_var('total_acc', 'Number of Total Accounts', continuous=True, dataset=datas
     
 
 
-![png](./imgs/output_73_1.png)
+![png](output_73_1.png)
 
 
 There does not seem to be a significant difference in charge off rate depending on the total account number
@@ -1011,14 +1018,10 @@ plot_var('verification_status', 'Verification Status', continuous=False, dataset
     
 
 
-![png](./imgs/output_76_1.png)
+![png](output_76_1.png)
 
 
 There seems to be a strong linear trend between charged off rate and verification status. Surprisingly, loans with a status of verified have a higher chance of becoming charged off.
-
-TODO: Add funded amount funded_amnt
-The amount of money used as a down payment on a loan is also important. Studies have demonstrated that when a customer puts down a large initial down payment, he or she has sufficient "skin in the game" to not walk away from a loan during tough times.
-The fact consumers put little money down, espeically during the subprime mortgage meltdown of the 2000s, is seen as a huge facotr of potential default. This is what lead to the housing bubble or the 2000s and can lead to economic recession.
 
 # Preliminary Model Design
 
@@ -1068,6 +1071,7 @@ dataset.head()
       <th>open_acc</th>
       <th>revol_util</th>
       <th>total_acc</th>
+      <th>total_pymnt</th>
       <th>mort_acc</th>
       <th>log_annual_inc</th>
       <th>log_installment</th>
@@ -1113,6 +1117,7 @@ dataset.head()
       <td>12</td>
       <td>13.2</td>
       <td>25</td>
+      <td>5385.245133</td>
       <td>1</td>
       <td>11.002117</td>
       <td>5.051073</td>
@@ -1156,6 +1161,7 @@ dataset.head()
       <td>19</td>
       <td>27.2</td>
       <td>27</td>
+      <td>7642.289180</td>
       <td>4</td>
       <td>11.608245</td>
       <td>5.454423</td>
@@ -1199,6 +1205,7 @@ dataset.head()
       <td>16</td>
       <td>48.6</td>
       <td>44</td>
+      <td>10283.629660</td>
       <td>3</td>
       <td>11.849405</td>
       <td>5.709433</td>
@@ -1242,6 +1249,7 @@ dataset.head()
       <td>9</td>
       <td>0.3</td>
       <td>12</td>
+      <td>2097.014574</td>
       <td>0</td>
       <td>11.289794</td>
       <td>4.140273</td>
@@ -1285,6 +1293,7 @@ dataset.head()
       <td>4</td>
       <td>98.9</td>
       <td>5</td>
+      <td>7206.461000</td>
       <td>0</td>
       <td>10.819798</td>
       <td>5.658436</td>
@@ -1333,13 +1342,51 @@ x = dataset.loc[:, dataset.columns != 'loan_status']
 # X = dataset.drop(columns=['loan_status'])
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=0, 
                                                     stratify=dataset['loan_status'])
+
+x_train.drop('total_pymnt', axis=1, inplace=True)
+test_pymnts = x_test.loc[:, x_test.columns == 'total_pymnt']
+x_test.drop('total_pymnt', axis=1, inplace=True)
+
 # x_train = x_train.reset_index()
 # y_train = y_train.reset_index()
 ```
 
+    c:\users\leon\miniconda3\envs\aiml\lib\site-packages\pandas\core\frame.py:3940: SettingWithCopyWarning: 
+    A value is trying to be set on a copy of a slice from a DataFrame
+    
+    See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+      errors=errors)
+    
+
 # Feature Selection and Model Fitting
 
 ### Logistic Regression Model
+
+### Base
+
+
+```python
+model_lr_base = LogisticRegression(penalty="l2", 
+                              C=0.5, 
+                              fit_intercept=True, 
+                              random_state=0, 
+                              max_iter=10000, 
+                              solver='lbfgs')
+model_lr_base.fit(x_train, y_train.values.ravel())
+```
+
+
+
+
+    LogisticRegression(C=0.5, class_weight=None, dual=False, fit_intercept=True,
+                       intercept_scaling=1, l1_ratio=None, max_iter=10000,
+                       multi_class='auto', n_jobs=None, penalty='l2',
+                       random_state=0, solver='lbfgs', tol=0.0001, verbose=0,
+                       warm_start=False)
+
+
+
+### Cost Sensitive Method
 
 
 ```python
@@ -1351,25 +1398,7 @@ model_lr = LogisticRegression(penalty="l2",
                               max_iter=10000, 
                               solver='lbfgs')
 model_lr = model_lr.fit(x_train, y_train.values.ravel())
-y_pred_lr = model_lr.predict(x_test)
 ```
-
-
-```python
-print("Accuracy: %.2f%%" % (model_lr.score(x_test, y_test) * 100))
-confusion_matrix(y_test, y_pred_lr)
-```
-
-    Accuracy: 64.50%
-    
-
-
-
-
-    array([[5405, 2824],
-           [1880, 3142]], dtype=int64)
-
-
 
 
 ```python
@@ -1380,8 +1409,8 @@ result.summary2()
 ```
 
     Optimization terminated successfully.
-             Current function value: 0.593109
-             Iterations 6
+             Current function value: 0.015635
+             Iterations 14
     
 
 
@@ -1389,150 +1418,153 @@ result.summary2()
 
 <table class="simpletable">
 <tr>
-        <td>Model:</td>              <td>Logit</td>      <td>Pseudo R-squared:</td>    <td>0.106</td>  
+        <td>Model:</td>              <td>Logit</td>      <td>Pseudo R-squared:</td>   <td>0.976</td>  
 </tr>
 <tr>
-  <td>Dependent Variable:</td>    <td>loan_status</td>         <td>AIC:</td>        <td>52469.7036</td>
+  <td>Dependent Variable:</td>    <td>loan_status</td>         <td>AIC:</td>        <td>1461.1080</td>
 </tr>
 <tr>
-         <td>Date:</td>        <td>2019-08-28 07:34</td>       <td>BIC:</td>        <td>52808.8372</td>
+         <td>Date:</td>        <td>2019-10-07 13:00</td>       <td>BIC:</td>        <td>1808.9373</td>
 </tr>
 <tr>
-   <td>No. Observations:</td>        <td>44167</td>       <td>Log-Likelihood:</td>    <td>-26196.</td> 
+   <td>No. Observations:</td>        <td>44167</td>       <td>Log-Likelihood:</td>   <td>-690.55</td> 
 </tr>
 <tr>
-       <td>Df Model:</td>             <td>38</td>            <td>LL-Null:</td>        <td>-29308.</td> 
+       <td>Df Model:</td>             <td>39</td>            <td>LL-Null:</td>       <td>-29308.</td> 
 </tr>
 <tr>
-     <td>Df Residuals:</td>          <td>44128</td>        <td>LLR p-value:</td>      <td>0.0000</td>  
+     <td>Df Residuals:</td>          <td>44127</td>        <td>LLR p-value:</td>     <td>0.0000</td>  
 </tr>
 <tr>
-      <td>Converged:</td>           <td>1.0000</td>           <td>Scale:</td>         <td>1.0000</td>  
+      <td>Converged:</td>           <td>1.0000</td>           <td>Scale:</td>        <td>1.0000</td>  
 </tr>
 <tr>
-    <td>No. Iterations:</td>        <td>6.0000</td>              <td></td>               <td></td>     
+    <td>No. Iterations:</td>        <td>14.0000</td>             <td></td>              <td></td>     
 </tr>
 </table>
 <table class="simpletable">
 <tr>
-                   <td></td>                    <th>Coef.</th>  <th>Std.Err.</th>    <th>z</th>     <th>P>|z|</th> <th>[0.025</th>  <th>0.975]</th> 
+                   <td></td>                    <th>Coef.</th>  <th>Std.Err.</th>     <th>z</th>     <th>P>|z|</th> <th>[0.025</th>  <th>0.975]</th> 
 </tr>
 <tr>
-  <th>loan_amnt</th>                           <td>-0.0000</td>  <td>0.0000</td>  <td>-2.1447</td> <td>0.0320</td> <td>-0.0000</td> <td>-0.0000</td>
+  <th>loan_amnt</th>                           <td>0.0051</td>   <td>0.0002</td>   <td>31.9155</td> <td>0.0000</td> <td>0.0048</td>  <td>0.0054</td> 
 </tr>
 <tr>
-  <th>term</th>                                <td>0.0141</td>   <td>0.0013</td>  <td>10.8372</td> <td>0.0000</td> <td>0.0115</td>  <td>0.0166</td> 
+  <th>term</th>                                <td>-0.0512</td>  <td>0.0184</td>   <td>-2.7819</td> <td>0.0054</td> <td>-0.0873</td> <td>-0.0151</td>
 </tr>
 <tr>
-  <th>int_rate</th>                            <td>0.0097</td>   <td>0.0091</td>  <td>1.0693</td>  <td>0.2849</td> <td>-0.0081</td> <td>0.0275</td> 
+  <th>int_rate</th>                            <td>0.0638</td>   <td>0.0724</td>   <td>0.8804</td>  <td>0.3787</td> <td>-0.0782</td> <td>0.2057</td> 
 </tr>
 <tr>
-  <th>emp_length</th>                          <td>-0.0119</td>  <td>0.0029</td>  <td>-4.0620</td> <td>0.0000</td> <td>-0.0176</td> <td>-0.0062</td>
+  <th>emp_length</th>                          <td>-0.0012</td>  <td>0.0230</td>   <td>-0.0522</td> <td>0.9584</td> <td>-0.0463</td> <td>0.0439</td> 
 </tr>
 <tr>
-  <th>dti</th>                                 <td>0.0116</td>   <td>0.0014</td>  <td>8.5047</td>  <td>0.0000</td> <td>0.0089</td>  <td>0.0143</td> 
+  <th>dti</th>                                 <td>0.0084</td>   <td>0.0106</td>   <td>0.7943</td>  <td>0.4270</td> <td>-0.0123</td> <td>0.0291</td> 
 </tr>
 <tr>
-  <th>delinq_2yrs</th>                         <td>0.1473</td>   <td>0.0181</td>  <td>8.1428</td>  <td>0.0000</td> <td>0.1118</td>  <td>0.1827</td> 
+  <th>delinq_2yrs</th>                         <td>0.2104</td>   <td>0.1332</td>   <td>1.5791</td>  <td>0.1143</td> <td>-0.0507</td> <td>0.4715</td> 
 </tr>
 <tr>
-  <th>earliest_cr_line</th>                    <td>-0.0019</td>  <td>0.0002</td>  <td>-9.7704</td> <td>0.0000</td> <td>-0.0022</td> <td>-0.0015</td>
+  <th>earliest_cr_line</th>                    <td>0.0025</td>   <td>0.0012</td>   <td>2.0681</td>  <td>0.0386</td> <td>0.0001</td>  <td>0.0049</td> 
 </tr>
 <tr>
-  <th>open_acc</th>                            <td>0.0244</td>   <td>0.0029</td>  <td>8.5558</td>  <td>0.0000</td> <td>0.0188</td>  <td>0.0300</td> 
+  <th>open_acc</th>                            <td>0.0415</td>   <td>0.0222</td>   <td>1.8681</td>  <td>0.0617</td> <td>-0.0020</td> <td>0.0850</td> 
 </tr>
 <tr>
-  <th>revol_util</th>                          <td>0.0086</td>   <td>0.0006</td>  <td>15.1312</td> <td>0.0000</td> <td>0.0075</td>  <td>0.0098</td> 
+  <th>revol_util</th>                          <td>0.0105</td>   <td>0.0042</td>   <td>2.5282</td>  <td>0.0115</td> <td>0.0024</td>  <td>0.0186</td> 
 </tr>
 <tr>
-  <th>total_acc</th>                           <td>-0.0080</td>  <td>0.0014</td>  <td>-5.8516</td> <td>0.0000</td> <td>-0.0107</td> <td>-0.0053</td>
+  <th>total_acc</th>                           <td>-0.0107</td>  <td>0.0107</td>   <td>-0.9991</td> <td>0.3178</td> <td>-0.0316</td> <td>0.0103</td> 
 </tr>
 <tr>
-  <th>mort_acc</th>                            <td>-0.0799</td>  <td>0.0081</td>  <td>-9.8922</td> <td>0.0000</td> <td>-0.0957</td> <td>-0.0641</td>
+  <th>total_pymnt</th>                         <td>-0.0049</td>  <td>0.0002</td>  <td>-31.3356</td> <td>0.0000</td> <td>-0.0052</td> <td>-0.0046</td>
 </tr>
 <tr>
-  <th>log_annual_inc</th>                      <td>-0.1578</td>  <td>0.0278</td>  <td>-5.6769</td> <td>0.0000</td> <td>-0.2123</td> <td>-0.1033</td>
+  <th>mort_acc</th>                            <td>0.0110</td>   <td>0.0647</td>   <td>0.1702</td>  <td>0.8649</td> <td>-0.1158</td> <td>0.1378</td> 
 </tr>
 <tr>
-  <th>log_installment</th>                     <td>0.4319</td>   <td>0.0405</td>  <td>10.6680</td> <td>0.0000</td> <td>0.3526</td>  <td>0.5113</td> 
+  <th>log_annual_inc</th>                      <td>-0.2491</td>  <td>0.1977</td>   <td>-1.2598</td> <td>0.2077</td> <td>-0.6366</td> <td>0.1384</td> 
 </tr>
 <tr>
-  <th>log_revol_bal</th>                       <td>-0.0277</td>  <td>0.0125</td>  <td>-2.2205</td> <td>0.0264</td> <td>-0.0521</td> <td>-0.0032</td>
+  <th>log_installment</th>                     <td>-1.5293</td>  <td>0.1870</td>   <td>-8.1799</td> <td>0.0000</td> <td>-1.8958</td> <td>-1.1629</td>
 </tr>
 <tr>
-  <th>grade_B</th>                             <td>0.7118</td>   <td>0.0571</td>  <td>12.4607</td> <td>0.0000</td> <td>0.5998</td>  <td>0.8238</td> 
+  <th>log_revol_bal</th>                       <td>-0.0575</td>  <td>0.0783</td>   <td>-0.7340</td> <td>0.4629</td> <td>-0.2109</td> <td>0.0960</td> 
 </tr>
 <tr>
-  <th>grade_C</th>                             <td>1.0898</td>   <td>0.0791</td>  <td>13.7817</td> <td>0.0000</td> <td>0.9348</td>  <td>1.2448</td> 
+  <th>grade_B</th>                             <td>0.3078</td>   <td>0.4038</td>   <td>0.7623</td>  <td>0.4459</td> <td>-0.4836</td> <td>1.0992</td> 
 </tr>
 <tr>
-  <th>grade_D</th>                             <td>1.3184</td>   <td>0.1140</td>  <td>11.5632</td> <td>0.0000</td> <td>1.0949</td>  <td>1.5418</td> 
+  <th>grade_C</th>                             <td>0.7029</td>   <td>0.5883</td>   <td>1.1947</td>  <td>0.2322</td> <td>-0.4502</td> <td>1.8559</td> 
 </tr>
 <tr>
-  <th>grade_E</th>                             <td>1.4086</td>   <td>0.1664</td>  <td>8.4630</td>  <td>0.0000</td> <td>1.0824</td>  <td>1.7349</td> 
+  <th>grade_D</th>                             <td>1.0094</td>   <td>0.8874</td>   <td>1.1374</td>  <td>0.2554</td> <td>-0.7299</td> <td>2.7486</td> 
 </tr>
 <tr>
-  <th>grade_F</th>                             <td>1.4722</td>   <td>0.2144</td>  <td>6.8651</td>  <td>0.0000</td> <td>1.0519</td>  <td>1.8925</td> 
+  <th>grade_E</th>                             <td>0.8045</td>   <td>1.3145</td>   <td>0.6120</td>  <td>0.5405</td> <td>-1.7718</td> <td>3.3809</td> 
 </tr>
 <tr>
-  <th>grade_G</th>                             <td>1.1873</td>   <td>0.2333</td>  <td>5.0900</td>  <td>0.0000</td> <td>0.7301</td>  <td>1.6445</td> 
+  <th>grade_F</th>                             <td>0.2924</td>   <td>1.7724</td>   <td>0.1650</td>  <td>0.8690</td> <td>-3.1814</td> <td>3.7662</td> 
 </tr>
 <tr>
-  <th>home_ownership_OWN</th>                  <td>0.1647</td>   <td>0.0363</td>  <td>4.5427</td>  <td>0.0000</td> <td>0.0936</td>  <td>0.2358</td> 
+  <th>grade_G</th>                             <td>1.8290</td>   <td>1.8524</td>   <td>0.9874</td>  <td>0.3235</td> <td>-1.8016</td> <td>5.4596</td> 
 </tr>
 <tr>
-  <th>home_ownership_RENT</th>                 <td>0.3616</td>   <td>0.0270</td>  <td>13.3728</td> <td>0.0000</td> <td>0.3086</td>  <td>0.4146</td> 
+  <th>home_ownership_OWN</th>                  <td>0.2594</td>   <td>0.2551</td>   <td>1.0171</td>  <td>0.3091</td> <td>-0.2405</td> <td>0.7593</td> 
 </tr>
 <tr>
-  <th>verification_status_Source Verified</th> <td>0.2497</td>   <td>0.0270</td>  <td>9.2583</td>  <td>0.0000</td> <td>0.1968</td>  <td>0.3026</td> 
+  <th>home_ownership_RENT</th>                 <td>0.0827</td>   <td>0.2142</td>   <td>0.3859</td>  <td>0.6996</td> <td>-0.3372</td> <td>0.5025</td> 
 </tr>
 <tr>
-  <th>verification_status_Verified</th>        <td>0.3870</td>   <td>0.0298</td>  <td>12.9815</td> <td>0.0000</td> <td>0.3285</td>  <td>0.4454</td> 
+  <th>verification_status_Source Verified</th> <td>0.3925</td>   <td>0.2123</td>   <td>1.8489</td>  <td>0.0645</td> <td>-0.0236</td> <td>0.8086</td> 
 </tr>
 <tr>
-  <th>purpose_credit_card</th>                 <td>0.1081</td>   <td>0.1079</td>  <td>1.0014</td>  <td>0.3166</td> <td>-0.1035</td> <td>0.3196</td> 
+  <th>verification_status_Verified</th>        <td>0.2522</td>   <td>0.2488</td>   <td>1.0135</td>  <td>0.3108</td> <td>-0.2355</td> <td>0.7399</td> 
 </tr>
 <tr>
-  <th>purpose_debt_consolidation</th>          <td>0.0823</td>   <td>0.1059</td>  <td>0.7777</td>  <td>0.4368</td> <td>-0.1252</td> <td>0.2898</td> 
+  <th>purpose_credit_card</th>                 <td>0.5843</td>   <td>0.7025</td>   <td>0.8318</td>  <td>0.4055</td> <td>-0.7925</td> <td>1.9611</td> 
 </tr>
 <tr>
-  <th>purpose_home_improvement</th>            <td>0.2263</td>   <td>0.1116</td>  <td>2.0281</td>  <td>0.0426</td> <td>0.0076</td>  <td>0.4450</td> 
+  <th>purpose_debt_consolidation</th>          <td>0.4451</td>   <td>0.6784</td>   <td>0.6561</td>  <td>0.5118</td> <td>-0.8846</td> <td>1.7748</td> 
 </tr>
 <tr>
-  <th>purpose_house</th>                       <td>-0.3497</td>  <td>0.1840</td>  <td>-1.9011</td> <td>0.0573</td> <td>-0.7103</td> <td>0.0108</td> 
+  <th>purpose_home_improvement</th>            <td>0.7780</td>   <td>0.7137</td>   <td>1.0900</td>  <td>0.2757</td> <td>-0.6209</td> <td>2.1769</td> 
 </tr>
 <tr>
-  <th>purpose_major_purchase</th>              <td>0.2294</td>   <td>0.1257</td>  <td>1.8241</td>  <td>0.0681</td> <td>-0.0171</td> <td>0.4758</td> 
+  <th>purpose_house</th>                       <td>0.6895</td>   <td>1.0535</td>   <td>0.6545</td>  <td>0.5128</td> <td>-1.3754</td> <td>2.7543</td> 
 </tr>
 <tr>
-  <th>purpose_medical</th>                     <td>0.4077</td>   <td>0.1356</td>  <td>3.0054</td>  <td>0.0027</td> <td>0.1418</td>  <td>0.6736</td> 
+  <th>purpose_major_purchase</th>              <td>0.2848</td>   <td>0.8008</td>   <td>0.3557</td>  <td>0.7221</td> <td>-1.2846</td> <td>1.8543</td> 
 </tr>
 <tr>
-  <th>purpose_moving</th>                      <td>0.2171</td>   <td>0.1493</td>  <td>1.4542</td>  <td>0.1459</td> <td>-0.0755</td> <td>0.5097</td> 
+  <th>purpose_medical</th>                     <td>0.6742</td>   <td>0.7594</td>   <td>0.8878</td>  <td>0.3747</td> <td>-0.8143</td> <td>2.1627</td> 
 </tr>
 <tr>
-  <th>purpose_other</th>                       <td>0.2888</td>   <td>0.1120</td>  <td>2.5783</td>  <td>0.0099</td> <td>0.0693</td>  <td>0.5084</td> 
+  <th>purpose_moving</th>                      <td>0.2560</td>   <td>0.8431</td>   <td>0.3037</td>  <td>0.7614</td> <td>-1.3964</td> <td>1.9085</td> 
 </tr>
 <tr>
-  <th>purpose_renewable_energy</th>            <td>0.5985</td>   <td>0.4225</td>  <td>1.4166</td>  <td>0.1566</td> <td>-0.2296</td> <td>1.4265</td> 
+  <th>purpose_other</th>                       <td>0.4449</td>   <td>0.6903</td>   <td>0.6446</td>  <td>0.5192</td> <td>-0.9080</td> <td>1.7978</td> 
 </tr>
 <tr>
-  <th>purpose_small_business</th>              <td>0.8556</td>   <td>0.1427</td>  <td>5.9975</td>  <td>0.0000</td> <td>0.5760</td>  <td>1.1352</td> 
+  <th>purpose_renewable_energy</th>            <td>0.4863</td>   <td>1.5947</td>   <td>0.3050</td>  <td>0.7604</td> <td>-2.6393</td> <td>3.6119</td> 
 </tr>
 <tr>
-  <th>purpose_vacation</th>                    <td>0.3761</td>   <td>0.1475</td>  <td>2.5498</td>  <td>0.0108</td> <td>0.0870</td>  <td>0.6652</td> 
+  <th>purpose_small_business</th>              <td>0.0845</td>   <td>1.1135</td>   <td>0.0759</td>  <td>0.9395</td> <td>-2.0979</td> <td>2.2669</td> 
 </tr>
 <tr>
-  <th>initial_list_status_w</th>               <td>-0.0780</td>  <td>0.0256</td>  <td>-3.0464</td> <td>0.0023</td> <td>-0.1282</td> <td>-0.0278</td>
+  <th>purpose_vacation</th>                    <td>0.5522</td>   <td>0.7479</td>   <td>0.7383</td>  <td>0.4603</td> <td>-0.9137</td> <td>2.0181</td> 
 </tr>
 <tr>
-  <th>application_type_Joint App</th>          <td>-0.5104</td>  <td>0.0540</td>  <td>-9.4513</td> <td>0.0000</td> <td>-0.6163</td> <td>-0.4046</td>
+  <th>initial_list_status_w</th>               <td>-0.0366</td>  <td>0.1820</td>   <td>-0.2011</td> <td>0.8407</td> <td>-0.3933</td> <td>0.3202</td> 
 </tr>
 <tr>
-  <th>pub_rec_At least one</th>                <td>0.0561</td>   <td>0.0427</td>  <td>1.3149</td>  <td>0.1885</td> <td>-0.0275</td> <td>0.1398</td> 
+  <th>application_type_Joint App</th>          <td>-0.1060</td>  <td>0.5709</td>   <td>-0.1857</td> <td>0.8527</td> <td>-1.2250</td> <td>1.0129</td> 
 </tr>
 <tr>
-  <th>pub_rec_bankruptcies_At least one</th>   <td>-0.0325</td>  <td>0.0490</td>  <td>-0.6630</td> <td>0.5073</td> <td>-0.1284</td> <td>0.0635</td> 
+  <th>pub_rec_At least one</th>                <td>0.1432</td>   <td>0.3356</td>   <td>0.4266</td>  <td>0.6697</td> <td>-0.5146</td> <td>0.8010</td> 
+</tr>
+<tr>
+  <th>pub_rec_bankruptcies_At least one</th>   <td>0.2980</td>   <td>0.3795</td>   <td>0.7853</td>  <td>0.4323</td> <td>-0.4458</td> <td>1.0419</td> 
 </tr>
 </table>
 
@@ -1548,15 +1580,40 @@ result.pvalues[result.pvalues > 0.05]
 
 
 
-    int_rate                             0.284927
-    purpose_credit_card                  0.316646
-    purpose_debt_consolidation           0.436757
-    purpose_house                        0.057285
-    purpose_major_purchase               0.068132
-    purpose_moving                       0.145901
-    purpose_renewable_energy             0.156607
-    pub_rec_At least one                 0.188533
-    pub_rec_bankruptcies_At least one    0.507311
+    int_rate                               0.378662
+    emp_length                             0.958403
+    dti                                    0.427021
+    delinq_2yrs                            0.114316
+    open_acc                               0.061749
+    total_acc                              0.317753
+    mort_acc                               0.864878
+    log_annual_inc                         0.207726
+    log_revol_bal                          0.462941
+    grade_B                                0.445874
+    grade_C                                0.232199
+    grade_D                                0.255358
+    grade_E                                0.540510
+    grade_F                                0.868953
+    grade_G                                0.323465
+    home_ownership_OWN                     0.309099
+    home_ownership_RENT                    0.699561
+    verification_status_Source Verified    0.064475
+    verification_status_Verified           0.310800
+    purpose_credit_card                    0.405548
+    purpose_debt_consolidation             0.511758
+    purpose_home_improvement               0.275716
+    purpose_house                          0.512816
+    purpose_major_purchase                 0.722068
+    purpose_medical                        0.374669
+    purpose_moving                         0.761364
+    purpose_other                          0.519200
+    purpose_renewable_energy               0.760395
+    purpose_small_business                 0.939501
+    purpose_vacation                       0.460320
+    initial_list_status_w                  0.840654
+    application_type_Joint App             0.852687
+    pub_rec_At least one                   0.669658
+    pub_rec_bankruptcies_At least one      0.432271
     dtype: float64
 
 
@@ -1570,45 +1627,173 @@ x_train_lr = x_train.drop(labels=drop_list, axis=1)
 x_test_lr = x_test.drop(labels=drop_list, axis=1)
 model_lr2 = LogisticRegression(penalty="l2", C=0.5, fit_intercept=True, class_weight='balanced',
                                random_state=0, max_iter=10000, solver='lbfgs')
-model_lr2 = model_lr2.fit(x_train_lr, y_train.values.ravel())
-y_pred_lr = model_lr2.predict(x_test_lr)
+model_lr2.fit(x_train_lr, y_train.values.ravel())
 ```
+
+
+
+
+    LogisticRegression(C=0.5, class_weight='balanced', dual=False,
+                       fit_intercept=True, intercept_scaling=1, l1_ratio=None,
+                       max_iter=10000, multi_class='auto', n_jobs=None,
+                       penalty='l2', random_state=0, solver='lbfgs', tol=0.0001,
+                       verbose=0, warm_start=False)
+
+
+
+### Sampling Method - SMOTE
+
+
+```python
+x_train_lr_sm, y_train_sm = SMOTE(random_state=1).fit_resample(x_train, y_train.values.ravel())
+model_lr_smote = LogisticRegression(penalty="l2", 
+                              C=0.5, 
+                              fit_intercept=True, 
+                              random_state=0, 
+                              max_iter=10000, 
+                              solver='lbfgs')
+model_lr_smote.fit(x_train_lr_sm, y_train_sm)
+```
+
+
+
+
+    LogisticRegression(C=0.5, class_weight=None, dual=False, fit_intercept=True,
+                       intercept_scaling=1, l1_ratio=None, max_iter=10000,
+                       multi_class='auto', n_jobs=None, penalty='l2',
+                       random_state=0, solver='lbfgs', tol=0.0001, verbose=0,
+                       warm_start=False)
+
+
+
+### Sampling Method - ADASYN
+
+
+```python
+x_train_lr_as, y_train_as = ADASYN(random_state=1).fit_sample(x_train, y_train.values.ravel())
+model_lr_adasyn = LogisticRegression(penalty="l2", 
+                                     C=0.5, fit_intercept=True, 
+                                     random_state=0, 
+                                     max_iter=10000, 
+                                     solver='lbfgs')
+model_lr_adasyn.fit(x_train_lr_as, y_train_as)
+```
+
+
+
+
+    LogisticRegression(C=0.5, class_weight=None, dual=False, fit_intercept=True,
+                       intercept_scaling=1, l1_ratio=None, max_iter=10000,
+                       multi_class='auto', n_jobs=None, penalty='l2',
+                       random_state=0, solver='lbfgs', tol=0.0001, verbose=0,
+                       warm_start=False)
+
+
 
 ### Logistic Regression Results
 
-
-```python
-print("Accuracy: %.2f%%" % (model_lr2.score(x_test_lr, y_test) * 100))
-confusion_matrix(y_test, y_pred_lr)
-```
-
-    Accuracy: 62.59%
-    
-
-
-
-
-    array([[5129, 3100],
-           [1857, 3165]], dtype=int64)
-
-
+### Base
 
 
 ```python
+# Make predictions and determine the error
+y_pred_lr = model_lr_base.predict(x_test)
+print("Accuracy: %.2f%%" % (model_lr_base.score(x_test, y_test) * 100))
+print(confusion_matrix(y_test, y_pred_lr))
 print('F1 Score:', f1_score(y_test, y_pred_lr))
 print(classification_report(y_test, y_pred_lr))
+# predict probabilities
+prob = model_lr_base.predict_proba(x_test)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate pr curve
+precision_lr, recall_lr, threshold = precision_recall_curve(y_test, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('PR-AUC: ', auc(recall_lr, precision_lr))
 ```
 
-    F1 Score: 0.5608221848143884
+    Accuracy: 65.70%
+    [[7134 1095]
+     [3450 1572]]
+    F1 Score: 0.4088958252048381
                   precision    recall  f1-score   support
     
-               0       0.73      0.62      0.67      8229
-               1       0.51      0.63      0.56      5022
+               0       0.67      0.87      0.76      8229
+               1       0.59      0.31      0.41      5022
     
-        accuracy                           0.63     13251
-       macro avg       0.62      0.63      0.62     13251
-    weighted avg       0.65      0.63      0.63     13251
+        accuracy                           0.66     13251
+       macro avg       0.63      0.59      0.58     13251
+    weighted avg       0.64      0.66      0.63     13251
     
+    PR-AUC:  0.5464040971217461
+    
+
+### Cost Sensitive Method
+
+
+```python
+# Make predictions and determine the error
+y_pred_lr = model_lr.predict(x_test)
+print("Accuracy: %.2f%%" % (model_lr.score(x_test, y_test) * 100))
+print(confusion_matrix(y_test, y_pred_lr))
+print('F1 Score:', f1_score(y_test, y_pred_lr))
+print(classification_report(y_test, y_pred_lr))
+# predict probabilities
+prob = model_lr.predict_proba(x_test)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate pr curve
+precision_lr, recall_lr, threshold = precision_recall_curve(y_test, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('PR-AUC: ', auc(recall_lr, precision_lr))
+```
+
+    Accuracy: 64.03%
+    [[5503 2726]
+     [2041 2981]]
+    F1 Score: 0.5556901854786094
+                  precision    recall  f1-score   support
+    
+               0       0.73      0.67      0.70      8229
+               1       0.52      0.59      0.56      5022
+    
+        accuracy                           0.64     13251
+       macro avg       0.63      0.63      0.63     13251
+    weighted avg       0.65      0.64      0.64     13251
+    
+    PR-AUC:  0.5464973303519882
+    
+
+
+```python
+y_pred_lr2 = model_lr2.predict(x_test_lr)
+print("Accuracy: %.2f%%" % (model_lr2.score(x_test_lr, y_test) * 100))
+print(confusion_matrix(y_test, y_pred_lr2))
+print('F1 Score:', f1_score(y_test, y_pred_lr2))
+print(classification_report(y_test, y_pred_lr2))
+prob = model_lr2.predict_proba(x_test_lr)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate pr curve
+precision_lr, recall_lr, threshold = precision_recall_curve(y_test, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('PR-AUC: ', auc(recall_lr, precision_lr))
+```
+
+    Accuracy: 58.94%
+    [[4733 3496]
+     [1945 3077]]
+    F1 Score: 0.5307460112117292
+                  precision    recall  f1-score   support
+    
+               0       0.71      0.58      0.64      8229
+               1       0.47      0.61      0.53      5022
+    
+        accuracy                           0.59     13251
+       macro avg       0.59      0.59      0.58     13251
+    weighted avg       0.62      0.59      0.60     13251
+    
+    PR-AUC:  0.4993774441315906
     
 
 
@@ -1662,7 +1847,79 @@ print('PR-AUC: ', auc(recall_lr, precision_lr))
        macro avg       0.62      0.63      0.63     13251
     weighted avg       0.65      0.64      0.64     13251
     
-    PR-AUC:  0.5415831419420438
+    PR-AUC:  0.5416129481431338
+    
+
+### Sampling Method - SMOTE
+
+
+```python
+# Make predictions and determine the error
+y_pred_lr = model_lr_smote.predict(x_test)
+print("Accuracy: %.2f%%" % (model_lr_smote.score(x_test, y_test) * 100))
+print(confusion_matrix(y_test, y_pred_lr))
+print('F1 Score:', f1_score(y_test, y_pred_lr))
+print(classification_report(y_test, y_pred_lr))
+# predict probabilities
+prob = model_lr_smote.predict_proba(x_test)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate pr curve
+precision_lr, recall_lr, threshold = precision_recall_curve(y_test, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('PR-AUC: ', auc(recall_lr, precision_lr))
+```
+
+    Accuracy: 64.49%
+    [[5376 2853]
+     [1852 3170]]
+    F1 Score: 0.5740153915799003
+                  precision    recall  f1-score   support
+    
+               0       0.74      0.65      0.70      8229
+               1       0.53      0.63      0.57      5022
+    
+        accuracy                           0.64     13251
+       macro avg       0.64      0.64      0.63     13251
+    weighted avg       0.66      0.64      0.65     13251
+    
+    PR-AUC:  0.558655682201526
+    
+
+### Sampling Method - ADASYN
+
+
+```python
+# Make predictions and determine the error
+y_pred_lr = model_lr_adasyn.predict(x_test)
+print("Accuracy: %.2f%%" % (model_lr_adasyn.score(x_test, y_test) * 100))
+print(confusion_matrix(y_test, y_pred_lr))
+print('F1 Score:', f1_score(y_test, y_pred_lr))
+print(classification_report(y_test, y_pred_lr))
+# predict probabilities
+prob = model_lr_adasyn.predict_proba(x_test)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate pr curve
+precision_lr, recall_lr, threshold = precision_recall_curve(y_test, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('PR-AUC: ', auc(recall_lr, precision_lr))
+```
+
+    Accuracy: 63.95%
+    [[5434 2795]
+     [1982 3040]]
+    F1 Score: 0.5600073685180068
+                  precision    recall  f1-score   support
+    
+               0       0.73      0.66      0.69      8229
+               1       0.52      0.61      0.56      5022
+    
+        accuracy                           0.64     13251
+       macro avg       0.63      0.63      0.63     13251
+    weighted avg       0.65      0.64      0.64     13251
+    
+    PR-AUC:  0.5459631714046866
     
 
 ### Random Forest Model
@@ -1718,11 +1975,11 @@ else:
     
 
 
-![png](./imgs/output_97_1.png)
+![png](output_109_1.png)
 
 
 
-![png](./imgs/output_97_2.png)
+![png](output_109_2.png)
 
 
 
@@ -1755,6 +2012,23 @@ important_indices = ['log_annual_inc',
 #                      'log_revol_bal']
 x_train_rf = x_train.loc[:, important_indices]
 x_test_rf = x_test.loc[:, important_indices]
+```
+
+#### Base Model
+
+
+```python
+model_rf_base_path = Path('../data/model_rf_base.joblib')
+if os.path.exists(model_rf_base_path):
+    model_rf_base = load(model_rf_base_path)
+else:
+    model_rf_base = RandomForestClassifier(n_estimators=500,
+                                        min_samples_leaf=30,
+                                        oob_score=True,
+                                        random_state=100,
+                                        n_jobs=-1)
+    model_rf_base.fit(x_train_rf, y_train.values.ravel())
+    dump(model_rf_base, model_rf_base_path)
 ```
 
 #### Class Sensetive Method
@@ -1813,6 +2087,40 @@ else:
 
 ### Random Forest Results
 
+
+```python
+# Make predictions and determine the error
+y_pred_rf = model_rf_base.predict(x_test_rf)
+print("Accuracy: %.2f%%" % (model_rf_base.score(x_test_rf, y_test) * 100))
+print(confusion_matrix(y_test, y_pred_rf))
+print('F1 Score:', f1_score(y_test, y_pred_rf))
+print(classification_report(y_test, y_pred_rf))
+# predict probabilities
+prob = model_rf_base.predict_proba(x_test_rf)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate pr curve
+precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('PR-AUC: ', auc(recall_rf, precision_rf))
+```
+
+    Accuracy: 67.73%
+    [[6816 1413]
+     [2863 2159]]
+    F1 Score: 0.502443565278101
+                  precision    recall  f1-score   support
+    
+               0       0.70      0.83      0.76      8229
+               1       0.60      0.43      0.50      5022
+    
+        accuracy                           0.68     13251
+       macro avg       0.65      0.63      0.63     13251
+    weighted avg       0.67      0.68      0.66     13251
+    
+    PR-AUC:  0.593429439597816
+    
+
 #### Cost Sensitive Methods
 
 
@@ -1833,20 +2141,20 @@ precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
-    Accuracy: 65.50%
-    [[5224 3005]
-     [1567 3455]]
-    F1 Score: 0.6018115310921442
+    Accuracy: 65.67%
+    [[5234 2995]
+     [1554 3468]]
+    F1 Score: 0.6039181541140619
                   precision    recall  f1-score   support
     
-               0       0.77      0.63      0.70      8229
-               1       0.53      0.69      0.60      5022
+               0       0.77      0.64      0.70      8229
+               1       0.54      0.69      0.60      5022
     
-        accuracy                           0.65     13251
+        accuracy                           0.66     13251
        macro avg       0.65      0.66      0.65     13251
-    weighted avg       0.68      0.65      0.66     13251
+    weighted avg       0.68      0.66      0.66     13251
     
-    PR-AUC:  0.593511887468364
+    PR-AUC:  0.5934318794159843
     
 
 #### Sampling Methods - SMOTE
@@ -1868,10 +2176,10 @@ precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
-    Accuracy: 68.09%
-    [[6428 1801]
-     [2428 2594]]
-    F1 Score: 0.550918551555697
+    Accuracy: 67.99%
+    [[6404 1825]
+     [2416 2606]]
+    F1 Score: 0.5513593568179413
                   precision    recall  f1-score   support
     
                0       0.73      0.78      0.75      8229
@@ -1881,7 +2189,7 @@ print('PR-AUC: ', auc(recall_rf, precision_rf))
        macro avg       0.66      0.65      0.65     13251
     weighted avg       0.67      0.68      0.68     13251
     
-    PR-AUC:  0.5934377700903294
+    PR-AUC:  0.5930660640408101
     
 
 #### Sampling Methods - ADASYN
@@ -1903,10 +2211,10 @@ precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
-    Accuracy: 68.00%
-    [[6392 1837]
-     [2403 2619]]
-    F1 Score: 0.5526482380248997
+    Accuracy: 68.01%
+    [[6401 1828]
+     [2411 2611]]
+    F1 Score: 0.5519501109819258
                   precision    recall  f1-score   support
     
                0       0.73      0.78      0.75      8229
@@ -1916,7 +2224,7 @@ print('PR-AUC: ', auc(recall_rf, precision_rf))
        macro avg       0.66      0.65      0.65     13251
     weighted avg       0.67      0.68      0.68     13251
     
-    PR-AUC:  0.5924283434146732
+    PR-AUC:  0.5929695058205939
     
 
 if you got an AUROC of 0.47, it just means you need to invert the predictions because Scikit-Learn is misinterpreting the positive class. AUROC should be >= 0.5.
@@ -1925,6 +2233,7 @@ if you got an AUROC of 0.47, it just means you need to invert the predictions be
 
 
 ```python
+# manual pick features kinda of improves nn but fully paid drops hard
 scaler = StandardScaler()
 scaler.fit(x_train.astype('float64'))
 StandardScaler(copy=True, with_mean=True, with_std=True)
@@ -1976,6 +2285,16 @@ print(model_nn.summary())
     WARNING:tensorflow:From c:\users\leon\miniconda3\envs\aiml\lib\site-packages\tensorflow\python\ops\math_ops.py:3066: to_int32 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
     Instructions for updating:
     Use tf.cast instead.
+    Epoch 1/5
+    30916/30916 [==============================] - 11s 358us/step - loss: 0.6056 - acc: 0.6649
+    Epoch 2/5
+    30916/30916 [==============================] - 9s 298us/step - loss: 0.5911 - acc: 0.6760
+    Epoch 3/5
+    30916/30916 [==============================] - 9s 307us/step - loss: 0.5880 - acc: 0.6802
+    Epoch 4/5
+    30916/30916 [==============================] - 9s 306us/step - loss: 0.5866 - acc: 0.6810
+    Epoch 5/5
+    30916/30916 [==============================] - 10s 308us/step - loss: 0.5847 - acc: 0.6831
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
     =================================================================
@@ -2048,21 +2367,21 @@ precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
-    13251/13251 [==============================] - 1s 46us/step
-    Accuracy: 66.95%
-    [[6971 1258]
-     [3124 1898]]
-    F1 Score: 0.4641721692345317
+    13251/13251 [==============================] - 1s 62us/step
+    Accuracy: 66.89%
+    [[6984 1245]
+     [3142 1880]]
+    F1 Score: 0.4615195777586842
                   precision    recall  f1-score   support
     
                0       0.69      0.85      0.76      8229
-               1       0.60      0.38      0.46      5022
+               1       0.60      0.37      0.46      5022
     
         accuracy                           0.67     13251
        macro avg       0.65      0.61      0.61     13251
     weighted avg       0.66      0.67      0.65     13251
     
-    PR-AUC:  0.5756921141795073
+    PR-AUC:  0.5740013368120431
     
 
 notes
@@ -2092,21 +2411,21 @@ precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
-    13251/13251 [==============================] - 1s 46us/step
-    Accuracy: 65.13%
-    [[5571 2658]
-     [1961 3061]]
-    F1 Score: 0.569965552555628
+    13251/13251 [==============================] - 1s 56us/step
+    Accuracy: 64.88%
+    [[5487 2742]
+     [1910 3112]]
+    F1 Score: 0.5722692166237586
                   precision    recall  f1-score   support
     
-               0       0.74      0.68      0.71      8229
-               1       0.54      0.61      0.57      5022
+               0       0.74      0.67      0.70      8229
+               1       0.53      0.62      0.57      5022
     
         accuracy                           0.65     13251
        macro avg       0.64      0.64      0.64     13251
-    weighted avg       0.66      0.65      0.66     13251
+    weighted avg       0.66      0.65      0.65     13251
     
-    PR-AUC:  0.5724683051858237
+    PR-AUC:  0.5715667242849665
     
 
 #### Sampling Method - ADASYN
@@ -2129,21 +2448,21 @@ precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
-    13251/13251 [==============================] - 1s 43us/step
-    Accuracy: 63.38%
-    [[5023 3206]
-     [1646 3376]]
-    F1 Score: 0.5818683212685282
+    13251/13251 [==============================] - 1s 55us/step
+    Accuracy: 63.17%
+    [[4896 3333]
+     [1548 3474]]
+    F1 Score: 0.58737002282526
                   precision    recall  f1-score   support
     
-               0       0.75      0.61      0.67      8229
-               1       0.51      0.67      0.58      5022
+               0       0.76      0.59      0.67      8229
+               1       0.51      0.69      0.59      5022
     
         accuracy                           0.63     13251
-       macro avg       0.63      0.64      0.63     13251
-    weighted avg       0.66      0.63      0.64     13251
+       macro avg       0.64      0.64      0.63     13251
+    weighted avg       0.67      0.63      0.64     13251
     
-    PR-AUC:  0.5682798417814128
+    PR-AUC:  0.5695211683674155
     
 
 ### XGBoost Model
@@ -2187,7 +2506,7 @@ ax1.plot(x_axis, results['validation_0']['auc'], label='Train')
 ax1.plot(x_axis, results['validation_1']['auc'], label='Test')
 ax1.legend()
 ax1.set_ylabel('AUC')
-ax1.set_title('XGBoost AUC')
+ax1.set_title('XGBoost PR-AUC')
 
 ax2.plot(x_axis, results['validation_0']['error'], label='Train')
 ax2.plot(x_axis, results['validation_1']['error'], label='Test')
@@ -2201,11 +2520,11 @@ plt.show()
 ```
 
 
-![png](./imgs/output_131_0.png)
+![png](output_146_0.png)
 
 
 
-![png](./imgs/output_131_1.png)
+![png](output_146_1.png)
 
 
 
@@ -2266,6 +2585,24 @@ x_train_xgb = x_train.loc[:, important_indices]
 x_test_xgb = x_test.loc[:, important_indices]
 ```
 
+#### Base Model
+
+
+```python
+model_xgb_base_path = Path('../data/model_xgb_base.joblib')
+if os.path.exists(model_xgb_base_path):
+    model_xgb_base = load(model_xgb_base_path)
+else:
+    model_xgb_base = XGBClassifier(max_depth=3,
+                              learning_rate=0.05,
+                              n_estimators=300,
+                              objective='binary:logistic',
+                              subsample=0.8,
+                              random_state=42)
+    model_xgb_base.fit(x_train_xgb, y_train.values.ravel())
+    dump(model_xgb, model_xgb_base_path)
+```
+
 #### Cost Sensitive Method
 
 
@@ -2297,13 +2634,12 @@ else:
     x_train_xgb_sm, y_train_sm = SMOTE(random_state=1).fit_resample(x_train_xgb, y_train.values.ravel())
     x_train_xgb_sm = pd.DataFrame(x_train_xgb_sm, columns=x_test_xgb.columns)
     y_train_sm = pd.DataFrame(y_train_sm, columns=y_train.columns)
-#     model_xgb_smote = XGBClassifier(max_depth=3,
-#                           learning_rate=0.01,
-#                           n_estimators=300,
-#                           objective='binary:logistic',
-#                           subsample=0.8,
-#                           random_state=42)
-    model_xgb_smote = XGBClassifier(random_state=42)
+    model_xgb_smote = XGBClassifier(max_depth=3,
+                          learning_rate=0.01,
+                          n_estimators=300,
+                          objective='binary:logistic',
+                          subsample=0.8,
+                          random_state=42)
     model_xgb_smote.fit(x_train_xgb_sm, y_train_sm.values.ravel())
     dump(model_xgb_smote, model_xgb_smote_path)
 ```
@@ -2360,6 +2696,40 @@ else:
 
 ### XGBoost Results
 
+
+```python
+# Make predictions and determine the error
+y_pred_xgb = model_xgb_base.predict(x_test_xgb)
+print("Accuracy: %.2f%%" % (model_xgb_base.score(x_test_xgb, y_test) * 100))
+print(confusion_matrix(y_test, y_pred_xgb))
+print('F1 Score:', f1_score(y_test, y_pred_xgb))
+print(classification_report(y_test, y_pred_xgb))
+# predict probabilities
+prob = model_xgb_base.predict_proba(x_test_xgb)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate pr curve
+precision_xgb, recall_xgb, threshold = precision_recall_curve(y_test, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('PR-AUC: ', auc(recall_xgb, precision_xgb))
+```
+
+    Accuracy: 69.51%
+    [[6757 1472]
+     [2568 2454]]
+    F1 Score: 0.5485024586499776
+                  precision    recall  f1-score   support
+    
+               0       0.72      0.82      0.77      8229
+               1       0.63      0.49      0.55      5022
+    
+        accuracy                           0.70     13251
+       macro avg       0.67      0.65      0.66     13251
+    weighted avg       0.69      0.70      0.69     13251
+    
+    PR-AUC:  0.6219669164829286
+    
+
 #### Cost Sensitive Method
 
 
@@ -2380,20 +2750,20 @@ precision_xgb, recall_xgb, threshold = precision_recall_curve(y_test, preds)
 print('PR-AUC: ', auc(recall_xgb, precision_xgb))
 ```
 
-    Accuracy: 67.84%
-    [[5315 2914]
-     [1347 3675]]
-    F1 Score: 0.6330204116785807
+    Accuracy: 67.63%
+    [[5281 2948]
+     [1342 3680]]
+    F1 Score: 0.6317596566523604
                   precision    recall  f1-score   support
     
-               0       0.80      0.65      0.71      8229
+               0       0.80      0.64      0.71      8229
                1       0.56      0.73      0.63      5022
     
         accuracy                           0.68     13251
        macro avg       0.68      0.69      0.67     13251
     weighted avg       0.71      0.68      0.68     13251
     
-    PR-AUC:  0.6211642119974837
+    PR-AUC:  0.621457929718918
     
 
 #### Sampling Method - SMOTE
@@ -2415,20 +2785,20 @@ precision_xgb, recall_xgb, threshold = precision_recall_curve(y_test, preds)
 print('PR-AUC: ', auc(recall_xgb, precision_xgb))
 ```
 
-    Accuracy: 68.64%
-    [[6392 1837]
-     [2319 2703]]
-    F1 Score: 0.5653628947918845
+    Accuracy: 66.77%
+    [[6013 2216]
+     [2187 2835]]
+    F1 Score: 0.5628908964558722
                   precision    recall  f1-score   support
     
-               0       0.73      0.78      0.75      8229
-               1       0.60      0.54      0.57      5022
+               0       0.73      0.73      0.73      8229
+               1       0.56      0.56      0.56      5022
     
-        accuracy                           0.69     13251
-       macro avg       0.66      0.66      0.66     13251
-    weighted avg       0.68      0.69      0.68     13251
+        accuracy                           0.67     13251
+       macro avg       0.65      0.65      0.65     13251
+    weighted avg       0.67      0.67      0.67     13251
     
-    PR-AUC:  0.6036610816318233
+    PR-AUC:  0.5839595093688296
     
 
 #### Sampling Method - ADASYN
@@ -2450,10 +2820,10 @@ precision_xgb, recall_xgb, threshold = precision_recall_curve(y_test, preds)
 print('PR-AUC: ', auc(recall_xgb, precision_xgb))
 ```
 
-    Accuracy: 66.81%
-    [[6012 2217]
-     [2181 2841]]
-    F1 Score: 0.5636904761904762
+    Accuracy: 66.83%
+    [[6014 2215]
+     [2180 2842]]
+    F1 Score: 0.5639448357972022
                   precision    recall  f1-score   support
     
                0       0.73      0.73      0.73      8229
@@ -2463,7 +2833,7 @@ print('PR-AUC: ', auc(recall_xgb, precision_xgb))
        macro avg       0.65      0.65      0.65     13251
     weighted avg       0.67      0.67      0.67     13251
     
-    PR-AUC:  0.5842815565224252
+    PR-AUC:  0.584599657530125
     
 
 ### Support Vector Machine Model
@@ -2556,74 +2926,21 @@ model_stacking_xgb = XGBClassifier(max_depth=3,
                                    random_state=42)
 model_stacking_xgb.fit(x_train_stacking, y_train_stacking.values.ravel())
 
-# Predict the test
-y_pred_xgb = model_stacking_xgb.predict(x_test_stacking)
-print("Accuracy: %.2f%%" % (model_stacking_xgb.score(x_test_stacking, y_test_stacking) * 100))
-print(confusion_matrix(y_test_stacking, y_pred_xgb))
-print('F1 Score:', f1_score(y_test_stacking, y_pred_xgb))
-print(classification_report(y_test_stacking, y_pred_xgb))
-# predict probabilities
-prob = model_stacking_xgb.predict_proba(x_test_stacking)
-# keep probabilities for the positive outcome only
-preds = prob[:,1]
-# calculate pr curve
-precision_xgb, recall_xgb, threshold = precision_recall_curve(y_test_stacking, preds)
-# calculate auc, equivalent to roc_auc_score()?
-print('PR-AUC: ', auc(recall_xgb, precision_xgb))
-```
-
-    Accuracy: 65.50%
-    [[5224 3005]
-     [1567 3455]]
-    F1 Score: 0.6018115310921442
-                  precision    recall  f1-score   support
-    
-               0       0.77      0.63      0.70      8229
-               1       0.53      0.69      0.60      5022
-    
-        accuracy                           0.65     13251
-       macro avg       0.65      0.66      0.65     13251
-    weighted avg       0.68      0.65      0.66     13251
-    
-    PR-AUC:  0.66472037540227
-    
-
-
-```python
 model_stacking_lr = LogisticRegression(penalty="l2", C=0.5, fit_intercept=True, class_weight='balanced',
                                random_state=0, max_iter=10000, solver='lbfgs')
 model_stacking_lr.fit(x_train_stacking, y_train_stacking.values.ravel())
-
-y_pred_lr = model_stacking_lr.predict(x_test_stacking)
-print("Accuracy: %.2f%%" % (model_stacking_lr.score(x_test_stacking, y_test_stacking) * 100))
-print(confusion_matrix(y_test_stacking, y_pred_lr))
-print('F1 Score:', f1_score(y_test_stacking, y_pred_lr))
-print(classification_report(y_test_stacking, y_pred_lr))
-# predict probabilities
-prob = model_stacking_lr.predict_proba(x_test_stacking)
-# keep probabilities for the positive outcome only
-preds = prob[:,1]
-# calculate pr curve
-precision_lr, recall_lr, threshold = precision_recall_curve(y_test_stacking, preds)
-# calculate auc, equivalent to roc_auc_score()?
-print('PR-AUC: ', auc(recall_lr, precision_lr))
 ```
 
-    Accuracy: 66.49%
-    [[5405 2824]
-     [1617 3405]]
-    F1 Score: 0.6052795307083815
-                  precision    recall  f1-score   support
-    
-               0       0.77      0.66      0.71      8229
-               1       0.55      0.68      0.61      5022
-    
-        accuracy                           0.66     13251
-       macro avg       0.66      0.67      0.66     13251
-    weighted avg       0.69      0.66      0.67     13251
-    
-    PR-AUC:  0.6658337200454842
-    
+
+
+
+    LogisticRegression(C=0.5, class_weight='balanced', dual=False,
+                       fit_intercept=True, intercept_scaling=1, l1_ratio=None,
+                       max_iter=10000, multi_class='auto', n_jobs=None,
+                       penalty='l2', random_state=0, solver='lbfgs', tol=0.0001,
+                       verbose=0, warm_start=False)
+
+
 
 ### Ensembled Results
 
@@ -2657,23 +2974,9 @@ print(classification_report(y_test2, output2['Prediction']))
 ```
 
     Averaging Method
-    Accuracy: 66.98%
-    [[3562 1460]
-     [2916 5313]]
-                  precision    recall  f1-score   support
-    
-         Default       0.55      0.71      0.62      5022
-      Fully Paid       0.78      0.65      0.71      8229
-    
-        accuracy                           0.67     13251
-       macro avg       0.67      0.68      0.66     13251
-    weighted avg       0.70      0.67      0.67     13251
-    
-    
-    Majority Method
-    Accuracy: 66.61%
-    [[3560 1462]
-     [2963 5266]]
+    Accuracy: 66.62%
+    [[3558 1464]
+     [2959 5270]]
                   precision    recall  f1-score   support
     
          Default       0.55      0.71      0.62      5022
@@ -2683,6 +2986,87 @@ print(classification_report(y_test2, output2['Prediction']))
        macro avg       0.66      0.67      0.66     13251
     weighted avg       0.69      0.67      0.67     13251
     
+    
+    Majority Method
+    Accuracy: 66.63%
+    [[3589 1433]
+     [2989 5240]]
+                  precision    recall  f1-score   support
+    
+         Default       0.55      0.71      0.62      5022
+      Fully Paid       0.79      0.64      0.70      8229
+    
+        accuracy                           0.67     13251
+       macro avg       0.67      0.68      0.66     13251
+    weighted avg       0.69      0.67      0.67     13251
+    
+    
+
+
+```python
+# Predict the test
+y_pred_xgb = model_stacking_xgb.predict(x_test_stacking)
+print("Accuracy: %.2f%%" % (model_stacking_xgb.score(x_test_stacking, y_test_stacking) * 100))
+print(confusion_matrix(y_test_stacking, y_pred_xgb))
+print('F1 Score:', f1_score(y_test_stacking, y_pred_xgb))
+print(classification_report(y_test_stacking, y_pred_xgb))
+# predict probabilities
+prob = model_stacking_xgb.predict_proba(x_test_stacking)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate pr curve
+precision_xgb, recall_xgb, threshold = precision_recall_curve(y_test_stacking, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('PR-AUC: ', auc(recall_xgb, precision_xgb))
+```
+
+    Accuracy: 65.67%
+    [[5234 2995]
+     [1554 3468]]
+    F1 Score: 0.6039181541140619
+                  precision    recall  f1-score   support
+    
+               0       0.77      0.64      0.70      8229
+               1       0.54      0.69      0.60      5022
+    
+        accuracy                           0.66     13251
+       macro avg       0.65      0.66      0.65     13251
+    weighted avg       0.68      0.66      0.66     13251
+    
+    PR-AUC:  0.6677997008639474
+    
+
+
+```python
+y_pred_lr = model_stacking_lr.predict(x_test_stacking)
+print("Accuracy: %.2f%%" % (model_stacking_lr.score(x_test_stacking, y_test_stacking) * 100))
+print(confusion_matrix(y_test_stacking, y_pred_lr))
+print('F1 Score:', f1_score(y_test_stacking, y_pred_lr))
+print(classification_report(y_test_stacking, y_pred_lr))
+# predict probabilities
+prob = model_stacking_lr.predict_proba(x_test_stacking)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate pr curve
+precision_lr, recall_lr, threshold = precision_recall_curve(y_test_stacking, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('PR-AUC: ', auc(recall_lr, precision_lr))
+```
+
+    Accuracy: 66.46%
+    [[5384 2845]
+     [1599 3423]]
+    F1 Score: 0.6063773250664304
+                  precision    recall  f1-score   support
+    
+               0       0.77      0.65      0.71      8229
+               1       0.55      0.68      0.61      5022
+    
+        accuracy                           0.66     13251
+       macro avg       0.66      0.67      0.66     13251
+    weighted avg       0.69      0.66      0.67     13251
+    
+    PR-AUC:  0.6653321959680909
     
 
 
@@ -2735,11 +3119,13 @@ plt.show()
 ```
 
 
-![png](./imgs/output_158_0.png)
+![png](output_177_0.png)
 
 
 
 ```python
+# copy the x_test_loan_amnt
+# attach test_pymnts to accu_metrics
 accu_metrics = pd.DataFrame(p_output.copy())
 accu_metrics['Actual'] = y_test2.to_numpy()
 accu_metrics['category'] = accu_metrics[['Fully Paid', 'Default']].max(axis=1)
@@ -2768,8 +3154,59 @@ plt.show()
 ```
 
 
-![png](./imgs/output_159_0.png)
+![png](output_178_0.png)
 
+
+
+```python
+new_name = pd.DataFrame(x_test['loan_amnt'])
+new_name = new_name.join(test_pymnts)
+new_name = new_name.join(y_test2)
+print(new_name.head(5))
+```
+
+           loan_amnt   total_pymnt  Prediction
+    24109       2400   2702.766324  Fully Paid
+    44435      16000   2328.800000     Default
+    3457       15000  16501.929360  Fully Paid
+    26029      20000   5724.300000     Default
+    5949       27000  31479.776610  Fully Paid
+    
+
+
+```python
+fuck = new_name.loc[new_name['Prediction'] == 'Fully Paid']
+total_cost = fuck['loan_amnt'].sum()
+total_return = fuck['total_pymnt'].sum()
+```
+
+
+```python
+print(((new_name['total_pymnt'].sum()/new_name['loan_amnt'].sum()) - 1) * 100)
+```
+
+    -20.615711683298986
+    
+
+
+```python
+ROI = ((total_return/total_cost) - 1) * 100
+print(ROI)
+```
+
+    9.904632231188826
+    
+
+
+```python
+orig_roi = new_name['total_pymnt'].sum() - new_name['loan_amnt'].sum()
+new_roi = total_return - total_cost
+pcnt_chng = ((new_roi - orig_roi) / abs(orig_roi)) * 100
+print(pcnt_chng)
+```
+
+    128.04880715815742
+    
 
 
 ```python
