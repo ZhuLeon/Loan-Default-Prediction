@@ -1424,7 +1424,7 @@ result.summary2()
   <td>Dependent Variable:</td>    <td>loan_status</td>         <td>AIC:</td>        <td>1461.1080</td>
 </tr>
 <tr>
-         <td>Date:</td>        <td>2019-10-07 13:00</td>       <td>BIC:</td>        <td>1808.9373</td>
+         <td>Date:</td>        <td>2019-10-15 11:46</td>       <td>BIC:</td>        <td>1808.9373</td>
 </tr>
 <tr>
    <td>No. Observations:</td>        <td>44167</td>       <td>Log-Likelihood:</td>   <td>-690.55</td> 
@@ -2249,6 +2249,51 @@ dump(scaler, Path('../data/scaler.joblib'))
 
 
 
+#### Base
+
+
+```python
+model_nn_base = Sequential()
+# Input layer
+model_nn_base.add(Dense(20, activation='relu', input_shape=(39,)))
+# Hidden layer
+model_nn_base.add(Dense(15, activation='relu'))
+model_nn_base.add(Dense(4, activation='relu'))
+# Output layer
+model_nn_base.add(Dense(2, activation='sigmoid'))
+model_nn_base.output_shape
+
+model_nn_base.compile(loss='binary_crossentropy',
+                optimizer='adam',
+                metrics=['accuracy'])
+model_nn_base.fit(x_train_nn, to_categorical(y_train), epochs=5, batch_size=10, verbose=1)
+```
+
+    WARNING:tensorflow:From c:\users\leon\miniconda3\envs\aiml\lib\site-packages\tensorflow\python\framework\op_def_library.py:263: colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Colocations handled automatically by placer.
+    WARNING:tensorflow:From c:\users\leon\miniconda3\envs\aiml\lib\site-packages\tensorflow\python\ops\math_ops.py:3066: to_int32 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
+    Instructions for updating:
+    Use tf.cast instead.
+    Epoch 1/5
+    30916/30916 [==============================] - 8s 267us/step - loss: 0.6057 - acc: 0.6652
+    Epoch 2/5
+    30916/30916 [==============================] - 7s 221us/step - loss: 0.5912 - acc: 0.6767
+    Epoch 3/5
+    30916/30916 [==============================] - 7s 217us/step - loss: 0.5880 - acc: 0.6805
+    Epoch 4/5
+    30916/30916 [==============================] - 7s 218us/step - loss: 0.5862 - acc: 0.6815
+    Epoch 5/5
+    30916/30916 [==============================] - 7s 218us/step - loss: 0.5842 - acc: 0.6830
+    
+
+
+
+
+    <keras.callbacks.History at 0x1dc8a0d5470>
+
+
+
 #### Cost Sensentive Method
 
 
@@ -2279,32 +2324,26 @@ else:
 print(model_nn.summary())
 ```
 
-    WARNING:tensorflow:From c:\users\leon\miniconda3\envs\aiml\lib\site-packages\tensorflow\python\framework\op_def_library.py:263: colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
-    Instructions for updating:
-    Colocations handled automatically by placer.
-    WARNING:tensorflow:From c:\users\leon\miniconda3\envs\aiml\lib\site-packages\tensorflow\python\ops\math_ops.py:3066: to_int32 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
-    Instructions for updating:
-    Use tf.cast instead.
     Epoch 1/5
-    30916/30916 [==============================] - 11s 358us/step - loss: 0.6056 - acc: 0.6649
+    30916/30916 [==============================] - 8s 269us/step - loss: 0.6054 - acc: 0.6607
     Epoch 2/5
-    30916/30916 [==============================] - 9s 298us/step - loss: 0.5911 - acc: 0.6760
+    30916/30916 [==============================] - 7s 222us/step - loss: 0.5908 - acc: 0.6779
     Epoch 3/5
-    30916/30916 [==============================] - 9s 307us/step - loss: 0.5880 - acc: 0.6802
+    30916/30916 [==============================] - 7s 225us/step - loss: 0.5880 - acc: 0.6792
     Epoch 4/5
-    30916/30916 [==============================] - 9s 306us/step - loss: 0.5866 - acc: 0.6810
+    30916/30916 [==============================] - 7s 221us/step - loss: 0.5860 - acc: 0.6822
     Epoch 5/5
-    30916/30916 [==============================] - 10s 308us/step - loss: 0.5847 - acc: 0.6831
+    30916/30916 [==============================] - 7s 223us/step - loss: 0.5844 - acc: 0.6843
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
     =================================================================
-    dense_1 (Dense)              (None, 20)                800       
+    dense_5 (Dense)              (None, 20)                800       
     _________________________________________________________________
-    dense_2 (Dense)              (None, 15)                315       
+    dense_6 (Dense)              (None, 15)                315       
     _________________________________________________________________
-    dense_3 (Dense)              (None, 4)                 64        
+    dense_7 (Dense)              (None, 4)                 64        
     _________________________________________________________________
-    dense_4 (Dense)              (None, 2)                 10        
+    dense_8 (Dense)              (None, 2)                 10        
     =================================================================
     Total params: 1,189
     Trainable params: 1,189
@@ -2341,6 +2380,43 @@ else:
 
 ### Neural Network Results
 
+#### Base
+
+
+```python
+y_pred_nn = model_nn_base.predict_classes(x_test_nn)
+score = model_nn_base.evaluate(x_test_nn, to_categorical(y_test))
+print("Accuracy: %.2f%%" % (score[1]*100))
+print(confusion_matrix(y_test, y_pred_nn))
+print('F1 Score:', f1_score(y_test, y_pred_nn))
+print(classification_report(y_test, y_pred_nn))
+# predict probabilities
+prob = model_nn_base.predict(x_test_nn)
+# keep probabilities for the positive outcome only
+preds = prob[:,1]
+# calculate pr curve
+precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
+# calculate auc, equivalent to roc_auc_score()?
+print('PR-AUC: ', auc(recall_rf, precision_rf))
+```
+
+    13251/13251 [==============================] - 1s 52us/step
+    Accuracy: 67.16%
+    [[7043 1186]
+     [3164 1858]]
+    F1 Score: 0.46069923134143315
+                  precision    recall  f1-score   support
+    
+               0       0.69      0.86      0.76      8229
+               1       0.61      0.37      0.46      5022
+    
+        accuracy                           0.67     13251
+       macro avg       0.65      0.61      0.61     13251
+    weighted avg       0.66      0.67      0.65     13251
+    
+    PR-AUC:  0.5744885194559898
+    
+
 #### Cost Sensentive Method
 
 
@@ -2367,21 +2443,21 @@ precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
-    13251/13251 [==============================] - 1s 62us/step
-    Accuracy: 66.89%
-    [[6984 1245]
-     [3142 1880]]
-    F1 Score: 0.4615195777586842
+    13251/13251 [==============================] - 1s 45us/step
+    Accuracy: 66.74%
+    [[6915 1314]
+     [3088 1934]]
+    F1 Score: 0.46771463119709794
                   precision    recall  f1-score   support
     
-               0       0.69      0.85      0.76      8229
-               1       0.60      0.37      0.46      5022
+               0       0.69      0.84      0.76      8229
+               1       0.60      0.39      0.47      5022
     
         accuracy                           0.67     13251
-       macro avg       0.65      0.61      0.61     13251
-    weighted avg       0.66      0.67      0.65     13251
+       macro avg       0.64      0.61      0.61     13251
+    weighted avg       0.65      0.67      0.65     13251
     
-    PR-AUC:  0.5740013368120431
+    PR-AUC:  0.5728758449378086
     
 
 notes
@@ -2411,21 +2487,21 @@ precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
-    13251/13251 [==============================] - 1s 56us/step
-    Accuracy: 64.88%
-    [[5487 2742]
-     [1910 3112]]
-    F1 Score: 0.5722692166237586
+    13251/13251 [==============================] - 1s 49us/step
+    Accuracy: 63.85%
+    [[5065 3164]
+     [1625 3397]]
+    F1 Score: 0.5865492532159199
                   precision    recall  f1-score   support
     
-               0       0.74      0.67      0.70      8229
-               1       0.53      0.62      0.57      5022
+               0       0.76      0.62      0.68      8229
+               1       0.52      0.68      0.59      5022
     
-        accuracy                           0.65     13251
-       macro avg       0.64      0.64      0.64     13251
-    weighted avg       0.66      0.65      0.65     13251
+        accuracy                           0.64     13251
+       macro avg       0.64      0.65      0.63     13251
+    weighted avg       0.67      0.64      0.64     13251
     
-    PR-AUC:  0.5715667242849665
+    PR-AUC:  0.5673667911654872
     
 
 #### Sampling Method - ADASYN
@@ -2448,21 +2524,21 @@ precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
 print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
-    13251/13251 [==============================] - 1s 55us/step
-    Accuracy: 63.17%
-    [[4896 3333]
-     [1548 3474]]
-    F1 Score: 0.58737002282526
+    13251/13251 [==============================] - 1s 45us/step
+    Accuracy: 63.02%
+    [[4790 3439]
+     [1461 3561]]
+    F1 Score: 0.5924139078356346
                   precision    recall  f1-score   support
     
-               0       0.76      0.59      0.67      8229
-               1       0.51      0.69      0.59      5022
+               0       0.77      0.58      0.66      8229
+               1       0.51      0.71      0.59      5022
     
         accuracy                           0.63     13251
-       macro avg       0.64      0.64      0.63     13251
+       macro avg       0.64      0.65      0.63     13251
     weighted avg       0.67      0.63      0.64     13251
     
-    PR-AUC:  0.5695211683674155
+    PR-AUC:  0.5665364411060081
     
 
 ### XGBoost Model
@@ -2520,11 +2596,11 @@ plt.show()
 ```
 
 
-![png](./imgs/output_146_0.png)
+![png](./imgs/output_150_0.png)
 
 
 
-![png](./imgs/output_146_1.png)
+![png](./imgs/output_150_1.png)
 
 
 
@@ -2600,7 +2676,7 @@ else:
                               subsample=0.8,
                               random_state=42)
     model_xgb_base.fit(x_train_xgb, y_train.values.ravel())
-    dump(model_xgb, model_xgb_base_path)
+    dump(model_xgb_base, model_xgb_base_path)
 ```
 
 #### Cost Sensitive Method
@@ -2974,31 +3050,31 @@ print(classification_report(y_test2, output2['Prediction']))
 ```
 
     Averaging Method
-    Accuracy: 66.62%
-    [[3558 1464]
-     [2959 5270]]
+    Accuracy: 66.66%
+    [[3576 1446]
+     [2972 5257]]
                   precision    recall  f1-score   support
     
          Default       0.55      0.71      0.62      5022
       Fully Paid       0.78      0.64      0.70      8229
     
         accuracy                           0.67     13251
-       macro avg       0.66      0.67      0.66     13251
+       macro avg       0.67      0.68      0.66     13251
     weighted avg       0.69      0.67      0.67     13251
     
     
     Majority Method
-    Accuracy: 66.63%
-    [[3589 1433]
-     [2989 5240]]
+    Accuracy: 66.64%
+    [[3606 1416]
+     [3004 5225]]
                   precision    recall  f1-score   support
     
-         Default       0.55      0.71      0.62      5022
-      Fully Paid       0.79      0.64      0.70      8229
+         Default       0.55      0.72      0.62      5022
+      Fully Paid       0.79      0.63      0.70      8229
     
         accuracy                           0.67     13251
        macro avg       0.67      0.68      0.66     13251
-    weighted avg       0.69      0.67      0.67     13251
+    weighted avg       0.70      0.67      0.67     13251
     
     
 
@@ -3033,7 +3109,7 @@ print('PR-AUC: ', auc(recall_xgb, precision_xgb))
        macro avg       0.65      0.66      0.65     13251
     weighted avg       0.68      0.66      0.66     13251
     
-    PR-AUC:  0.6677997008639474
+    PR-AUC:  0.6696112083428931
     
 
 
@@ -3053,20 +3129,20 @@ precision_lr, recall_lr, threshold = precision_recall_curve(y_test_stacking, pre
 print('PR-AUC: ', auc(recall_lr, precision_lr))
 ```
 
-    Accuracy: 66.46%
-    [[5384 2845]
-     [1599 3423]]
-    F1 Score: 0.6063773250664304
+    Accuracy: 66.52%
+    [[5388 2841]
+     [1595 3427]]
+    F1 Score: 0.6070859167404783
                   precision    recall  f1-score   support
     
                0       0.77      0.65      0.71      8229
                1       0.55      0.68      0.61      5022
     
-        accuracy                           0.66     13251
+        accuracy                           0.67     13251
        macro avg       0.66      0.67      0.66     13251
-    weighted avg       0.69      0.66      0.67     13251
+    weighted avg       0.69      0.67      0.67     13251
     
-    PR-AUC:  0.6653321959680909
+    PR-AUC:  0.6683310271522053
     
 
 
@@ -3119,18 +3195,21 @@ plt.show()
 ```
 
 
-![png](./imgs/output_177_0.png)
+![png](./imgs/output_181_0.png)
 
 
 
 ```python
-# copy the x_test_loan_amnt
-# attach test_pymnts to accu_metrics
 accu_metrics = pd.DataFrame(p_output.copy())
 accu_metrics['Actual'] = y_test2.to_numpy()
 accu_metrics['category'] = accu_metrics[['Fully Paid', 'Default']].max(axis=1)
 accu_metrics['category'] = accu_metrics['category'].str.rstrip('%').astype('float')
-accu_metrics['proba_range'] = pd.cut(accu_metrics['category'], [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], 
+temp = pd.DataFrame(x_test['loan_amnt'])
+temp = temp.join(test_pymnts)
+temp.reset_index(inplace=True, drop=True)
+accu_metrics = accu_metrics.join(temp)
+accu_metrics['PL'] = ((accu_metrics['total_pymnt'] - accu_metrics['loan_amnt']) / abs(accu_metrics['loan_amnt'])) * 100
+accu_metrics['proba_range'] = pd.cut(accu_metrics['category'], [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], right=False,
                            labels=['0-10', '10-20', '20-30', '30-40', '40-50', '50-60', 
                                    '60-70', '70-80', '80-90', '90-100'], include_lowest=True)
 accu_metrics['correct'] = 0
@@ -3141,71 +3220,59 @@ accu_metric['Accuracy'] = accu_metric['correct'] / accu_metric['total'] * 100
 accu_metric.dropna(inplace=True)
 accu_metric.reset_index(inplace=True)
 
+returns_orgi = pd.DataFrame(accu_metrics.groupby('proba_range')['PL'].sum())
+returns_orgi['rows'] = accu_metrics.groupby(['proba_range']).count()['correct']
+returns_orgi['Avg_pct_return'] = returns_orgi['PL'] / returns_orgi['rows']
+returns_new = accu_metrics.loc[accu_metrics['Prediction']=='Fully Paid']
+returns_new = pd.DataFrame(returns_new.groupby('proba_range')['PL'].sum())
+returns_new['rows'] = accu_metrics.groupby(['proba_range']).count()['correct']
+returns_new['Avg_pct_return'] = returns_new['PL'] / returns_new['rows']
+returns_chart = pd.DataFrame()
+returns_chart['avg_improvement'] = returns_new['Avg_pct_return'] - returns_orgi['Avg_pct_return']
+returns_chart.dropna(inplace=True)
+returns_chart.reset_index(inplace=True)
+
+# This is for get rid of the groupby no data issue
+accu_metric.to_csv('../data/fuck.csv', index=False)
+accu_metric = pd.read_csv(Path('../data/fuck.csv'), header=0)
+returns_chart.to_csv('../data/fuck2.csv')
+returns_chart = pd.read_csv(Path('../data/fuck2.csv'), header=0)
+
 f, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12, 3), dpi=90)
-sns.barplot(x='proba_range', y='total', data=accu_metric, ax=ax1)
+sns.barplot(x='proba_range', y='total', data=accu_metric, color=sns.xkcd_rgb['windows blue'], ax=ax1)
 ax1.set_xlabel('Prediction Probability Range')
 ax1.set_ylabel('Frequency')
-ax1.set_title('Amount of prediction in each probability range')
-ax1.set_xticklabels(ax1.get_xticklabels(), rotation=90)
-sns.barplot(x='proba_range', y="Accuracy", data=accu_metric, ax=ax2)
+ax1.set_title('Distirubtion of Prediction Accuracy Percentage ')
+# ax1.set_xticklabels(ax1.get_xticklabels(), rotation=90)
+sns.barplot(x='proba_range', y="avg_improvement", data=returns_chart, color=sns.xkcd_rgb['windows blue'], ax=ax2)
 ax2.set_xlabel('Prediction Probability Range')
-ax2.set_xticklabels(ax2.get_xticklabels(), rotation=90)
+ax2.set_ylabel('Percent')
+ax2.set_title('Average Percent Return Improvement')
+# ax2.set_xticklabels(ax2.get_xticklabels(), rotation=90)
 plt.show()
 ```
 
 
-![png](./imgs/output_178_0.png)
+![png](./imgs/output_182_0.png)
 
 
 
 ```python
-new_name = pd.DataFrame(x_test['loan_amnt'])
-new_name = new_name.join(test_pymnts)
-new_name = new_name.join(y_test2)
-print(new_name.head(5))
-```
+print('Overall return without model:', ((accu_metrics['total_pymnt'].sum()/accu_metrics['loan_amnt'].sum()) - 1) * 100)
 
-           loan_amnt   total_pymnt  Prediction
-    24109       2400   2702.766324  Fully Paid
-    44435      16000   2328.800000     Default
-    3457       15000  16501.929360  Fully Paid
-    26029      20000   5724.300000     Default
-    5949       27000  31479.776610  Fully Paid
-    
+total_cost = accu_metrics.loc[accu_metrics['Prediction'] == 'Fully Paid']['loan_amnt'].sum()
+total_return = accu_metrics.loc[accu_metrics['Prediction'] == 'Fully Paid']['total_pymnt'].sum()
+print('Overall return with model:', ((total_return/total_cost) - 1) * 100)
 
-
-```python
-fuck = new_name.loc[new_name['Prediction'] == 'Fully Paid']
-total_cost = fuck['loan_amnt'].sum()
-total_return = fuck['total_pymnt'].sum()
-```
-
-
-```python
-print(((new_name['total_pymnt'].sum()/new_name['loan_amnt'].sum()) - 1) * 100)
-```
-
-    -20.615711683298986
-    
-
-
-```python
-ROI = ((total_return/total_cost) - 1) * 100
-print(ROI)
-```
-
-    9.904632231188826
-    
-
-
-```python
-orig_roi = new_name['total_pymnt'].sum() - new_name['loan_amnt'].sum()
+orig_roi = accu_metrics['total_pymnt'].sum() - accu_metrics['loan_amnt'].sum()
 new_roi = total_return - total_cost
 pcnt_chng = ((new_roi - orig_roi) / abs(orig_roi)) * 100
-print(pcnt_chng)
+print('Percent improvement:', pcnt_chng)
 ```
 
-    128.04880715815742
+    Overall return without model: -20.615711683298986
+    Overall return with model: -7.897430408063977
+    Percent improvement: 84.04148464777614
     
 
 
