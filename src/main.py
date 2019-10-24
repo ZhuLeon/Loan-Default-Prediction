@@ -200,8 +200,8 @@ def print_prediction(output, true_value, output2):
 
 
 def main():
-    model_rf_prod_path = Path('../data/rf_1000.joblib')
-    model_nn_prod_path = Path('../data/model_nn.h5')
+    model_rf_prod_path = Path('../data/model_rf.joblib')
+    model_nn_prod_path = Path('../data/model_nn_adasyn.h5')
     model_xgb_prod_path = Path('../data/model_xgb.joblib')
     models_list = [model_rf_prod_path, model_nn_prod_path, model_xgb_prod_path]
     for item in models_list:
@@ -211,7 +211,7 @@ def main():
             print('Build complete.')
             break
     # Create input DataFrame
-    input_data = pd.read_csv(Path('../data/input.csv'), header=0)
+    input_data = pd.read_csv(Path('../data/2017Half.csv'), header=0)
     input_data['loan_status'].replace('Charged Off', 'Default', inplace=True)
     keep_list = ['annual_inc', 'application_type', 'dti', 'delinq_2yrs', 'earliest_cr_line',
                  'emp_length', 'home_ownership', 'initial_list_status', 'installment', 'int_rate',
@@ -222,7 +222,7 @@ def main():
     input_data.drop(labels=drop_list, axis=1, inplace=True)
     # if np.array_equal(np.sort(input_data.columns.values), np.sort(keep_list)):
     #     raise Exception('Incorrect columns. Please recheck data')
-    input_data.to_csv(Path('../data/input_clean.csv'), index=False)
+    input_data.to_csv(Path('../data/2017Half_clean.csv'), index=False)
     test = input_data.loc[:, input_data.columns == 'loan_status']
     # test['loan_status'].replace('Fully Paid', 0, inplace=True)
     # test['loan_status'].replace('Default', 1, inplace=True)
