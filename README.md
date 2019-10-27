@@ -89,8 +89,12 @@ Details of the implementation can be found [here](https://github.com/ZhuLeon/Loa
 
 ## Model Details
 
-In progress...
+![Model_Details](./src/imgs/Model_Details.png)
 
 ## Model Results
 
 ![Returns](./src/imgs/returns.png)
+
+    Overall return without model: -20.615711683298986
+    Overall return with model: -7.897430408063977
+    Overall percent improvement: 84.04148464777614
