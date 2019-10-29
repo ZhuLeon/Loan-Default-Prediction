@@ -93,12 +93,12 @@ Many models were trained and fitted, but the final model chosen is a ensemble mo
 
 ## Model Results
 
-![Returns](./src/imgs/returns.png)
-
     Model Accuracy: 68%
     Overall return without model: -20.62%
     Overall return with model: -7.90%
     Overall percent improvement: 84.04%
+
+![Returns](./src/imgs/returns.png)
 
 * Left: If the model predicted fully paid with 75% probability, this would be categorised to be in the 70% - 80% range
 * Right: If the model predicted 75% probability, the average improvement is 18%
