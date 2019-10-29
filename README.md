@@ -1,6 +1,7 @@
 # Overview
 
-Using [loan data from Lending Club](https://www.lendingclub.com/info/download-data.action) we use machine learning to predict the risk of loan defaults. Additionally, using the results from the predictive modeling, we improve the potential return on investment.
+Using [loan data from Lending Club](https://www.lendingclub.com/info/download-data.action) we use machine learning to predict the risk of loan defaults. Additionally, using the results from the predictive modeling, we improve the potential return on investment. <br>
+Details of the implementation can be found [here](https://github.com/ZhuLeon/Loan-Default-Prediction/blob/master/src/README.md).
 
 ## Table of Contents
 
@@ -85,16 +86,20 @@ Each row represents a client's financial information
 </table>
 </div>
 
-Details of the implementation can be found [here](https://github.com/ZhuLeon/Loan-Default-Prediction/blob/master/src/README.md).
-
 ## Model Details
 
+Many models were trained and fitted, but the final model chosen is a ensemble model by stacking method:
 ![Model_Details](./src/imgs/Model_Details.png)
 
 ## Model Results
 
 ![Returns](./src/imgs/returns.png)
 
-    Overall return without model: -20.615711683298986
-    Overall return with model: -7.897430408063977
-    Overall percent improvement: 84.04148464777614
+    Model Accuracy: 68%
+    Overall return without model: -20.62%
+    Overall return with model: -7.90%
+    Overall percent improvement: 84.04%
+
+* Left: If the model predicted fully paid with 75% probability, this would be categorised to be in the 70% - 80% range
+* Right: If the model predicted 75% probability, the average improvement is 18%
+* With increasing probabilities, there is an increasing improvement on return until the 80% – 100% range. In this range, few to no loans are defaulted on so there is not much opportunity to improve returns
