@@ -14,7 +14,7 @@ Details of the implementation can be found [here](https://github.com/ZhuLeon/Loa
 ## Introduction
 
 Suppose a bank wants to know whether potential loan applicants will default on a loan. Loan information for a client is provided and a binary outcome of fully paid or default is predicted. We will use logistic regression, random forest, neural network, xgboost, and ensemble classifieres to create a model. This will provide useful metrics and help improve return on investment for the company.
-![Diagram](./src/imgs/Diagram_EN.png)
+![Diagram](./src/imgs/Diagram_EN.svg)
 
 ## Description of Data
 
@@ -89,16 +89,16 @@ Each row represents a client's financial information
 ## Model Details
 
 Many models were trained and fitted, but the final model chosen is a ensemble model by stacking method:
-![Model_Details](./src/imgs/Model_Details.png)
+![Model_Details](./src/imgs/Model_Details.svg)
 
 ## Model Results
-
-![Returns](./src/imgs/returns.png)
 
     Model Accuracy: 68%
     Overall return without model: -20.62%
     Overall return with model: -7.90%
     Overall percent improvement: 84.04%
+
+![Returns](./src/imgs/returns.png)
 
 * Left: If the model predicted fully paid with 75% probability, this would be categorised to be in the 70% - 80% range
 * Right: If the model predicted 75% probability, the average improvement is 18%
