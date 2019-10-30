@@ -1362,16 +1362,16 @@ x_test.drop('total_pymnt', axis=1, inplace=True)
 
 ### Logistic Regression Model
 
-### Base
+#### Base
 
 
 ```python
-model_lr_base = LogisticRegression(penalty="l2", 
-                              C=0.5, 
-                              fit_intercept=True, 
-                              random_state=0, 
-                              max_iter=10000, 
-                              solver='lbfgs')
+model_lr_base = LogisticRegression(penalty="l2",
+                                   C=0.5,
+                                   fit_intercept=True,
+                                   random_state=0,
+                                   max_iter=10000,
+                                   solver='lbfgs')
 model_lr_base.fit(x_train, y_train.values.ravel())
 ```
 
@@ -1386,16 +1386,16 @@ model_lr_base.fit(x_train, y_train.values.ravel())
 
 
 
-### Cost Sensitive Method
+#### Cost Sensitive Method
 
 
 ```python
-model_lr = LogisticRegression(penalty="l2", 
-                              C=0.5, 
-                              fit_intercept=True, 
-                              class_weight='balanced', 
-                              random_state=0, 
-                              max_iter=10000, 
+model_lr = LogisticRegression(penalty="l2",
+                              C=0.5,
+                              fit_intercept=True,
+                              class_weight='balanced',
+                              random_state=0,
+                              max_iter=10000,
                               solver='lbfgs')
 model_lr = model_lr.fit(x_train, y_train.values.ravel())
 ```
@@ -1424,7 +1424,7 @@ result.summary2()
   <td>Dependent Variable:</td>    <td>loan_status</td>         <td>AIC:</td>        <td>1461.1080</td>
 </tr>
 <tr>
-         <td>Date:</td>        <td>2019-10-15 11:46</td>       <td>BIC:</td>        <td>1808.9373</td>
+         <td>Date:</td>        <td>2019-10-30 08:20</td>       <td>BIC:</td>        <td>1808.9373</td>
 </tr>
 <tr>
    <td>No. Observations:</td>        <td>44167</td>       <td>Log-Likelihood:</td>   <td>-690.55</td> 
@@ -1641,17 +1641,17 @@ model_lr2.fit(x_train_lr, y_train.values.ravel())
 
 
 
-### Sampling Method - SMOTE
+#### Sampling Method - SMOTE
 
 
 ```python
 x_train_lr_sm, y_train_sm = SMOTE(random_state=1).fit_resample(x_train, y_train.values.ravel())
-model_lr_smote = LogisticRegression(penalty="l2", 
-                              C=0.5, 
-                              fit_intercept=True, 
-                              random_state=0, 
-                              max_iter=10000, 
-                              solver='lbfgs')
+model_lr_smote = LogisticRegression(penalty="l2",
+                                    C=0.5,
+                                    fit_intercept=True,
+                                    random_state=0,
+                                    max_iter=10000,
+                                    solver='lbfgs')
 model_lr_smote.fit(x_train_lr_sm, y_train_sm)
 ```
 
@@ -1666,7 +1666,7 @@ model_lr_smote.fit(x_train_lr_sm, y_train_sm)
 
 
 
-### Sampling Method - ADASYN
+#### Sampling Method - ADASYN
 
 
 ```python
@@ -1692,7 +1692,7 @@ model_lr_adasyn.fit(x_train_lr_as, y_train_as)
 
 ### Logistic Regression Results
 
-### Base
+#### Base
 
 
 ```python
@@ -1728,7 +1728,7 @@ print('PR-AUC: ', auc(recall_lr, precision_lr))
     PR-AUC:  0.5464040971217461
     
 
-### Cost Sensitive Method
+#### Cost Sensitive Method
 
 
 ```python
@@ -1850,7 +1850,7 @@ print('PR-AUC: ', auc(recall_lr, precision_lr))
     PR-AUC:  0.5416129481431338
     
 
-### Sampling Method - SMOTE
+#### Sampling Method - SMOTE
 
 
 ```python
@@ -1886,7 +1886,7 @@ print('PR-AUC: ', auc(recall_lr, precision_lr))
     PR-AUC:  0.558655682201526
     
 
-### Sampling Method - ADASYN
+#### Sampling Method - ADASYN
 
 
 ```python
@@ -2002,14 +2002,6 @@ important_indices = ['log_annual_inc',
                      'term',
                      'verification_status_Source Verified',
                      'verification_status_Verified']
-# important_indices = ['int_rate', 
-#                      'revol_util',
-#                      'dti',
-#                      'log_installment', 
-#                      'loan_amnt', 
-#                      'mort_acc', 
-#                      'home_ownership_RENT',
-#                      'log_revol_bal']
 x_train_rf = x_train.loc[:, important_indices]
 x_test_rf = x_test.loc[:, important_indices]
 ```
@@ -2087,6 +2079,8 @@ else:
 
 ### Random Forest Results
 
+#### Base
+
 
 ```python
 # Make predictions and determine the error
@@ -2125,19 +2119,14 @@ print('PR-AUC: ', auc(recall_rf, precision_rf))
 
 
 ```python
-# Make predictions and determine the error
 y_pred_rf = model_rf.predict(x_test_rf)
 print("Accuracy: %.2f%%" % (model_rf.score(x_test_rf, y_test) * 100))
 print(confusion_matrix(y_test, y_pred_rf))
 print('F1 Score:', f1_score(y_test, y_pred_rf))
 print(classification_report(y_test, y_pred_rf))
-# predict probabilities
 prob = model_rf.predict_proba(x_test_rf)
-# keep probabilities for the positive outcome only
 preds = prob[:,1]
-# calculate pr curve
 precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
-# calculate auc, equivalent to roc_auc_score()?
 print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
@@ -2166,13 +2155,9 @@ print("Accuracy: %.2f%%" % (model_rf_smote.score(x_test_rf, y_test) * 100))
 print(confusion_matrix(y_test, y_pred_rf))
 print('F1 Score:', f1_score(y_test, y_pred_rf))
 print(classification_report(y_test, y_pred_rf))
-# predict probabilities
 prob = model_rf_smote.predict_proba(x_test_rf)
-# keep probabilities for the positive outcome only
 preds = prob[:,1]
-# calculate pr curve
 precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
-# calculate auc, equivalent to roc_auc_score()?
 print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
@@ -2201,13 +2186,9 @@ print("Accuracy: %.2f%%" % (model_rf_adasyn.score(x_test_rf, y_test) * 100))
 print(confusion_matrix(y_test, y_pred_rf))
 print('F1 Score:', f1_score(y_test, y_pred_rf))
 print(classification_report(y_test, y_pred_rf))
-# predict probabilities
 prob = model_rf_adasyn.predict_proba(x_test_rf)
-# keep probabilities for the positive outcome only
 preds = prob[:,1]
-# calculate pr curve
 precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
-# calculate auc, equivalent to roc_auc_score()?
 print('PR-AUC: ', auc(recall_rf, precision_rf))
 ```
 
@@ -2233,7 +2214,6 @@ if you got an AUROC of 0.47, it just means you need to invert the predictions be
 
 
 ```python
-# manual pick features kinda of improves nn but fully paid drops hard
 scaler = StandardScaler()
 scaler.fit(x_train.astype('float64'))
 StandardScaler(copy=True, with_mean=True, with_std=True)
@@ -2261,40 +2241,41 @@ model_nn_base.add(Dense(15, activation='relu'))
 model_nn_base.add(Dense(4, activation='relu'))
 # Output layer
 model_nn_base.add(Dense(2, activation='sigmoid'))
-model_nn_base.output_shape
+print(model_nn_base.output_shape)
 
 model_nn_base.compile(loss='binary_crossentropy',
-                optimizer='adam',
-                metrics=['accuracy'])
+                      optimizer='adam',
+                      metrics=['accuracy'])
 model_nn_base.fit(x_train_nn, to_categorical(y_train), epochs=5, batch_size=10, verbose=1)
 ```
 
     WARNING:tensorflow:From c:\users\leon\miniconda3\envs\aiml\lib\site-packages\tensorflow\python\framework\op_def_library.py:263: colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
     Instructions for updating:
     Colocations handled automatically by placer.
+    (None, 2)
     WARNING:tensorflow:From c:\users\leon\miniconda3\envs\aiml\lib\site-packages\tensorflow\python\ops\math_ops.py:3066: to_int32 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
     Instructions for updating:
     Use tf.cast instead.
     Epoch 1/5
-    30916/30916 [==============================] - 8s 267us/step - loss: 0.6057 - acc: 0.6652
+    30916/30916 [==============================] - 6s 186us/step - loss: 0.6056 - acc: 0.6644
     Epoch 2/5
-    30916/30916 [==============================] - 7s 221us/step - loss: 0.5912 - acc: 0.6767
+    30916/30916 [==============================] - 5s 157us/step - loss: 0.5913 - acc: 0.6768
     Epoch 3/5
-    30916/30916 [==============================] - 7s 217us/step - loss: 0.5880 - acc: 0.6805
+    30916/30916 [==============================] - 5s 155us/step - loss: 0.5883 - acc: 0.6811
     Epoch 4/5
-    30916/30916 [==============================] - 7s 218us/step - loss: 0.5862 - acc: 0.6815
+    30916/30916 [==============================] - 5s 155us/step - loss: 0.5864 - acc: 0.6816
     Epoch 5/5
-    30916/30916 [==============================] - 7s 218us/step - loss: 0.5842 - acc: 0.6830
+    30916/30916 [==============================] - 5s 157us/step - loss: 0.5844 - acc: 0.6837
     
 
 
 
 
-    <keras.callbacks.History at 0x1dc8a0d5470>
+    <keras.callbacks.History at 0x1deab575cf8>
 
 
 
-#### Cost Sensentive Method
+#### Cost Sensitive Method
 
 
 ```python
@@ -2303,8 +2284,8 @@ if os.path.exists(model_nn_path):
     model_nn = load_model(str(model_nn_path))
 else:
     class_weights = class_weight.compute_class_weight('balanced', 
-                                                  np.unique(y_train.values.ravel()), 
-                                                  y_train.values.ravel())
+                                                      np.unique(y_train.values.ravel()), 
+                                                      y_train.values.ravel())
     model_nn = Sequential()
     # Input layer
     model_nn.add(Dense(20, activation='relu', input_shape=(39,)))
@@ -2313,27 +2294,28 @@ else:
     model_nn.add(Dense(4, activation='relu'))
     # Output layer
     model_nn.add(Dense(2, activation='sigmoid'))
-    model_nn.output_shape
+    print(model_nn.output_shape)
     
-    model_nn.compile(loss='binary_crossentropy',
-                    optimizer='adam',
-                    metrics=['accuracy'])
+    model_nn.compile(loss='binary_crossentropy', 
+                     optimizer='adam', 
+                     metrics=['accuracy'])
     model_nn.fit(x_train_nn, to_categorical(y_train), epochs=5, batch_size=10, class_weight=class_weights, verbose=1)
     
     model_nn.save(str(model_nn_path))
 print(model_nn.summary())
 ```
 
+    (None, 2)
     Epoch 1/5
-    30916/30916 [==============================] - 8s 269us/step - loss: 0.6054 - acc: 0.6607
+    30916/30916 [==============================] - 6s 183us/step - loss: 0.6056 - acc: 0.6599
     Epoch 2/5
-    30916/30916 [==============================] - 7s 222us/step - loss: 0.5908 - acc: 0.6779
+    30916/30916 [==============================] - 5s 158us/step - loss: 0.5907 - acc: 0.6779
     Epoch 3/5
-    30916/30916 [==============================] - 7s 225us/step - loss: 0.5880 - acc: 0.6792
+    30916/30916 [==============================] - 5s 157us/step - loss: 0.5882 - acc: 0.6788
     Epoch 4/5
-    30916/30916 [==============================] - 7s 221us/step - loss: 0.5860 - acc: 0.6822
+    30916/30916 [==============================] - 5s 173us/step - loss: 0.5862 - acc: 0.6811
     Epoch 5/5
-    30916/30916 [==============================] - 7s 223us/step - loss: 0.5844 - acc: 0.6843
+    30916/30916 [==============================] - 5s 171us/step - loss: 0.5846 - acc: 0.6839
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
     =================================================================
@@ -2395,16 +2377,16 @@ prob = model_nn_base.predict(x_test_nn)
 # keep probabilities for the positive outcome only
 preds = prob[:,1]
 # calculate pr curve
-precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
+precision_nn, recall_nn, threshold = precision_recall_curve(y_test, preds)
 # calculate auc, equivalent to roc_auc_score()?
-print('PR-AUC: ', auc(recall_rf, precision_rf))
+print('PR-AUC: ', auc(recall_nn, precision_nn))
 ```
 
-    13251/13251 [==============================] - 1s 52us/step
-    Accuracy: 67.16%
-    [[7043 1186]
-     [3164 1858]]
-    F1 Score: 0.46069923134143315
+    13251/13251 [==============================] - 1s 41us/step
+    Accuracy: 67.22%
+    [[7051 1178]
+     [3166 1856]]
+    F1 Score: 0.46077457795431975
                   precision    recall  f1-score   support
     
                0       0.69      0.86      0.76      8229
@@ -2414,7 +2396,7 @@ print('PR-AUC: ', auc(recall_rf, precision_rf))
        macro avg       0.65      0.61      0.61     13251
     weighted avg       0.66      0.67      0.65     13251
     
-    PR-AUC:  0.5744885194559898
+    PR-AUC:  0.5761936061130482
     
 
 #### Cost Sensentive Method
@@ -2425,47 +2407,30 @@ y_pred_nn = model_nn.predict_classes(x_test_nn)
 score = model_nn.evaluate(x_test_nn, to_categorical(y_test))
 print("Accuracy: %.2f%%" % (score[1]*100))
 print(confusion_matrix(y_test, y_pred_nn))
-
-# df_cm = pd.DataFrame(confusion_matrix(y_test, y_pred_nn), 
-#                       index = ['Fully Paid', 'Default'], 
-#                       columns = ['Fully Paid', 'Default'])
-# plt.figure(figsize = (10,7))
-# sns.heatmap(df_cm, annot=True)
 print('F1 Score:', f1_score(y_test, y_pred_nn))
 print(classification_report(y_test, y_pred_nn))
-# predict probabilities
 prob = model_nn.predict(x_test_nn)
-# keep probabilities for the positive outcome only
 preds = prob[:,1]
-# calculate pr curve
-precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
-# calculate auc, equivalent to roc_auc_score()?
-print('PR-AUC: ', auc(recall_rf, precision_rf))
+precision_nn, recall_nn, threshold = precision_recall_curve(y_test, preds)
+print('PR-AUC: ', auc(recall_nn, precision_nn))
 ```
 
-    13251/13251 [==============================] - 1s 45us/step
-    Accuracy: 66.74%
-    [[6915 1314]
-     [3088 1934]]
-    F1 Score: 0.46771463119709794
+    13251/13251 [==============================] - 0s 37us/step
+    Accuracy: 66.76%
+    [[6943 1286]
+     [3119 1903]]
+    F1 Score: 0.46352454025088297
                   precision    recall  f1-score   support
     
                0       0.69      0.84      0.76      8229
-               1       0.60      0.39      0.47      5022
+               1       0.60      0.38      0.46      5022
     
         accuracy                           0.67     13251
        macro avg       0.64      0.61      0.61     13251
     weighted avg       0.65      0.67      0.65     13251
     
-    PR-AUC:  0.5728758449378086
+    PR-AUC:  0.5755291216948994
     
-
-notes
-higher f1 score is good.
-we dont want a default to be labeled as a paid since this results in a larger loss of money
-so we want to minimize false negative(label was predicted positive and is actually negative or predicted paid actually default)
-so we want to look at recall
-loook at the numbers for 1
 
 #### Sampling Method - SMOTE
 
@@ -2477,21 +2442,17 @@ print("Accuracy: %.2f%%" % (score[1]*100))
 print(confusion_matrix(y_test, y_pred_nn))
 print('F1 Score:', f1_score(y_test, y_pred_nn))
 print(classification_report(y_test, y_pred_nn))
-# predict probabilities
 prob = model_nn_smote.predict(x_test_nn)
-# keep probabilities for the positive outcome only
 preds = prob[:,1]
-# calculate pr curve
-precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
-# calculate auc, equivalent to roc_auc_score()?
-print('PR-AUC: ', auc(recall_rf, precision_rf))
+precision_nn, recall_nn, threshold = precision_recall_curve(y_test, preds)
+print('PR-AUC: ', auc(recall_nn, precision_nn))
 ```
 
-    13251/13251 [==============================] - 1s 49us/step
-    Accuracy: 63.85%
-    [[5065 3164]
-     [1625 3397]]
-    F1 Score: 0.5865492532159199
+    13251/13251 [==============================] - 0s 34us/step
+    Accuracy: 63.99%
+    [[5069 3160]
+     [1614 3408]]
+    F1 Score: 0.58809318377912
                   precision    recall  f1-score   support
     
                0       0.76      0.62      0.68      8229
@@ -2499,9 +2460,9 @@ print('PR-AUC: ', auc(recall_rf, precision_rf))
     
         accuracy                           0.64     13251
        macro avg       0.64      0.65      0.63     13251
-    weighted avg       0.67      0.64      0.64     13251
+    weighted avg       0.67      0.64      0.65     13251
     
-    PR-AUC:  0.5673667911654872
+    PR-AUC:  0.5724406688143368
     
 
 #### Sampling Method - ADASYN
@@ -2514,31 +2475,27 @@ print("Accuracy: %.2f%%" % (score[1]*100))
 print(confusion_matrix(y_test, y_pred_nn))
 print('F1 Score:', f1_score(y_test, y_pred_nn))
 print(classification_report(y_test, y_pred_nn))
-# predict probabilities
 prob = model_nn_adasyn.predict(x_test_nn)
-# keep probabilities for the positive outcome only
 preds = prob[:,1]
-# calculate pr curve
-precision_rf, recall_rf, threshold = precision_recall_curve(y_test, preds)
-# calculate auc, equivalent to roc_auc_score()?
-print('PR-AUC: ', auc(recall_rf, precision_rf))
+precision_nn, recall_nn, threshold = precision_recall_curve(y_test, preds)
+print('PR-AUC: ', auc(recall_nn, precision_nn))
 ```
 
-    13251/13251 [==============================] - 1s 45us/step
-    Accuracy: 63.02%
-    [[4790 3439]
-     [1461 3561]]
-    F1 Score: 0.5924139078356346
+    13251/13251 [==============================] - 0s 34us/step
+    Accuracy: 63.09%
+    [[4818 3411]
+     [1482 3540]]
+    F1 Score: 0.5913304936106238
                   precision    recall  f1-score   support
     
-               0       0.77      0.58      0.66      8229
-               1       0.51      0.71      0.59      5022
+               0       0.76      0.59      0.66      8229
+               1       0.51      0.70      0.59      5022
     
         accuracy                           0.63     13251
        macro avg       0.64      0.65      0.63     13251
     weighted avg       0.67      0.63      0.64     13251
     
-    PR-AUC:  0.5665364411060081
+    PR-AUC:  0.5709266215713528
     
 
 ### XGBoost Model
@@ -2588,7 +2545,7 @@ ax2.plot(x_axis, results['validation_0']['error'], label='Train')
 ax2.plot(x_axis, results['validation_1']['error'], label='Test')
 ax2.legend()
 ax2.set_ylabel('Classification Error')
-ax2.set_title('XGBoost Classifcation Error')
+ax2.set_title('XGBoost Classification Error')
 plt.show()
 
 plot_importance(model_xgb)
@@ -2627,9 +2584,6 @@ plt.show()
 
 
 ```python
-# Extract the ten most important features
-
-# manually picked somewhat improved xgboost cost sensitive by a small amount
 important_indices = ['log_annual_inc',
                      'dti',
                      'home_ownership_OWN',
@@ -2647,16 +2601,6 @@ important_indices = ['log_annual_inc',
                      'term',
                      'verification_status_Source Verified',
                      'verification_status_Verified']
-# important_indices = ['dti', 
-#                      'int_rate',
-#                      'revol_util',
-#                      'log_installment', 
-#                      'open_acc', 
-#                      'log_revol_bal', 
-#                      'mort_acc', 
-#                      'loan_amnt', 
-#                      'total_acc',
-#                      'log_annual_inc']
 x_train_xgb = x_train.loc[:, important_indices]
 x_test_xgb = x_test.loc[:, important_indices]
 ```
@@ -2669,12 +2613,12 @@ model_xgb_base_path = Path('../data/model_xgb_base.joblib')
 if os.path.exists(model_xgb_base_path):
     model_xgb_base = load(model_xgb_base_path)
 else:
-    model_xgb_base = XGBClassifier(max_depth=3,
-                              learning_rate=0.05,
-                              n_estimators=300,
-                              objective='binary:logistic',
-                              subsample=0.8,
-                              random_state=42)
+    model_xgb_base = XGBClassifier(max_depth=3, 
+                                   learning_rate=0.05, 
+                                   n_estimators=300, 
+                                   objective='binary:logistic', 
+                                   subsample=0.8, 
+                                   random_state=42)
     model_xgb_base.fit(x_train_xgb, y_train.values.ravel())
     dump(model_xgb_base, model_xgb_base_path)
 ```
@@ -2710,43 +2654,14 @@ else:
     x_train_xgb_sm, y_train_sm = SMOTE(random_state=1).fit_resample(x_train_xgb, y_train.values.ravel())
     x_train_xgb_sm = pd.DataFrame(x_train_xgb_sm, columns=x_test_xgb.columns)
     y_train_sm = pd.DataFrame(y_train_sm, columns=y_train.columns)
-    model_xgb_smote = XGBClassifier(max_depth=3,
-                          learning_rate=0.01,
-                          n_estimators=300,
-                          objective='binary:logistic',
-                          subsample=0.8,
-                          random_state=42)
+    model_xgb_smote = XGBClassifier(max_depth=3, 
+                                    learning_rate=0.01, 
+                                    n_estimators=300, 
+                                    objective='binary:logistic', 
+                                    subsample=0.8, 
+                                    random_state=42)
     model_xgb_smote.fit(x_train_xgb_sm, y_train_sm.values.ravel())
     dump(model_xgb_smote, model_xgb_smote_path)
-```
-
-
-```python
-# eval_set = [(x_train_xgb_sm, y_train_sm.values.ravel()), (x_test_xgb, y_test.values.ravel())]
-# eval_metric = ['auc', 'error']
-# model_xgb_smote.fit(x_train_xgb_sm, y_train_sm.values.ravel(), eval_metric=eval_metric, eval_set=eval_set, 
-#               verbose=False)
-
-# results = model_xgb_smote.evals_result()
-# epochs = len(results['validation_0']['error'])
-# x_axis = range(0, epochs)
-
-# f, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12, 3), dpi=90)
-# ax1.plot(x_axis, results['validation_0']['auc'], label='Train')
-# ax1.plot(x_axis, results['validation_1']['auc'], label='Test')
-# ax1.legend()
-# ax1.set_ylabel('AUC')
-# ax1.set_title('XGBoost AUC')
-
-# ax2.plot(x_axis, results['validation_0']['error'], label='Train')
-# ax2.plot(x_axis, results['validation_1']['error'], label='Test')
-# ax2.legend()
-# ax2.set_ylabel('Classification Error')
-# ax2.set_title('XGBoost Classifcation Error')
-# plt.show()
-
-# plot_importance(model_xgb_smote)
-# plt.show()
 ```
 
 #### Sampling Method - ADASYN
@@ -2760,12 +2675,12 @@ else:
     x_train_xgb_as, y_train_as = ADASYN(random_state=1).fit_sample(x_train_xgb, y_train.values.ravel())
     x_train_xgb_as = pd.DataFrame(x_train_xgb_as, columns=x_test_xgb.columns)
     y_train_as = pd.DataFrame(y_train_as, columns=y_train.columns)
-    model_xgb_adasyn = XGBClassifier(max_depth=3,
-                          learning_rate=0.01,
-                          n_estimators=300,
-                          objective='binary:logistic',
-                          subsample=0.8,
-                          random_state=42)
+    model_xgb_adasyn = XGBClassifier(max_depth=3, 
+                                     learning_rate=0.01, 
+                                     n_estimators=300, 
+                                     objective='binary:logistic', 
+                                     subsample=0.8, 
+                                     random_state=42)
     model_xgb_adasyn.fit(x_train_xgb_as, y_train_as.values.ravel())
     dump(model_xgb_adasyn, model_xgb_adasyn_path)
 ```
@@ -2912,44 +2827,7 @@ print('PR-AUC: ', auc(recall_xgb, precision_xgb))
     PR-AUC:  0.584599657530125
     
 
-### Support Vector Machine Model
-
-
-```python
-# from sklearn.svm import SVC
-# from sklearn.model_selection import GridSearchCV
-
-# model_svm_path = Path('../data/model_svm.joblib')
-# if os.path.exists(model_svm_path):
-#     model_svm = load(model_svm_path)
-# else:            
-#     # parameter_candidates = [
-#     #     {'C': [1, 10, 100], 'kernel': ['linear'], 'class_weight': ['balanced']},        
-#     #     {'C': [1, 10, 100], 'gamma': [10, 0, 0.001, 0.0001], 'kernel': ['rbf'], 'class_weight': ['balanced']}    
-#     # ]
-#     # 
-#     # clf = GridSearchCV(estimator=SVC(), param_grid = parameter_candidates, n_jobs=-1, cv=5)
-#     # clf.fit(x_train, y_train.values.ravel())
-#     # print('Best score for data:', clf.best_score_)
-#     # print('Best C:', clf.best_estimator_.C)
-#     # print('Best Kernel:', clf.best_estimator_.kernel)
-#     # print('Best Gamma:', clf.best_estimator_.gamma)
-#     model_svm = SVC(kernel='rbf', C=1, gamma=0.05, class_weight='balanced', random_state=0)
-#     model_svm.fit(x_train, y_train.values.ravel())
-#     dump(model_svm, model_svm_path)
-# y_pred_svm = model_svm.predict(x_test)
-# print('Accuracy of SVM on test set: {:.3f}'.format(model_svm.score(x_test, y_test)))
-# # 0.741 C=1 gamma = 0.05
-# # 0.777 C=1 gamma = 1
-```
-
-
-```python
-# print("Accuracy: %.2f%%" % (model_svm.score(x_test, y_test) * 100))
-# print(confusion_matrix(y_test, y_pred_svm))
-```
-
-### Ensembled Model
+### Ensemble Model
 
 
 ```python
@@ -2990,9 +2868,7 @@ x_test_stacking = pd.DataFrame({'rf': output_rf2, 'nn': output_nn2, 'xgb': outpu
 y_test_stacking = pd.DataFrame(y_test.copy())
 
 # Fit the Meta Learner from first level predictions
-# arthurtok introduction to ensembling stacking in python
-# test to see if i need to smote this shit again
-neg_weight = y_train_stacking['loan_status'].value_counts(dropna=False)[0]/y_train_stacking['loan_status'].value_counts(dropna=False)[1]
+neg_weight = y_train_stacking['loan_status'].value_counts(dropna=False)[0] / y_train_stacking['loan_status'].value_counts(dropna=False)[1]
 model_stacking_xgb = XGBClassifier(max_depth=3, 
                                    learning_rate=0.05, 
                                    n_estimators=300, 
@@ -3003,7 +2879,7 @@ model_stacking_xgb = XGBClassifier(max_depth=3,
 model_stacking_xgb.fit(x_train_stacking, y_train_stacking.values.ravel())
 
 model_stacking_lr = LogisticRegression(penalty="l2", C=0.5, fit_intercept=True, class_weight='balanced',
-                               random_state=0, max_iter=10000, solver='lbfgs')
+                                       random_state=0, max_iter=10000, solver='lbfgs')
 model_stacking_lr.fit(x_train_stacking, y_train_stacking.values.ravel())
 ```
 
@@ -3018,7 +2894,7 @@ model_stacking_lr.fit(x_train_stacking, y_train_stacking.values.ravel())
 
 
 
-### Ensembled Results
+### Ensemble Results
 
 
 ```python
@@ -3050,9 +2926,9 @@ print(classification_report(y_test2, output2['Prediction']))
 ```
 
     Averaging Method
-    Accuracy: 66.66%
-    [[3576 1446]
-     [2972 5257]]
+    Accuracy: 66.70%
+    [[3572 1450]
+     [2963 5266]]
                   precision    recall  f1-score   support
     
          Default       0.55      0.71      0.62      5022
@@ -3064,13 +2940,13 @@ print(classification_report(y_test2, output2['Prediction']))
     
     
     Majority Method
-    Accuracy: 66.64%
-    [[3606 1416]
-     [3004 5225]]
+    Accuracy: 66.65%
+    [[3599 1423]
+     [2996 5233]]
                   precision    recall  f1-score   support
     
          Default       0.55      0.72      0.62      5022
-      Fully Paid       0.79      0.63      0.70      8229
+      Fully Paid       0.79      0.64      0.70      8229
     
         accuracy                           0.67     13251
        macro avg       0.67      0.68      0.66     13251
@@ -3109,7 +2985,7 @@ print('PR-AUC: ', auc(recall_xgb, precision_xgb))
        macro avg       0.65      0.66      0.65     13251
     weighted avg       0.68      0.66      0.66     13251
     
-    PR-AUC:  0.6696112083428931
+    PR-AUC:  0.669572334466345
     
 
 
@@ -3129,20 +3005,20 @@ precision_lr, recall_lr, threshold = precision_recall_curve(y_test_stacking, pre
 print('PR-AUC: ', auc(recall_lr, precision_lr))
 ```
 
-    Accuracy: 66.52%
-    [[5388 2841]
-     [1595 3427]]
-    F1 Score: 0.6070859167404783
+    Accuracy: 66.47%
+    [[5386 2843]
+     [1600 3422]]
+    F1 Score: 0.6063613006113228
                   precision    recall  f1-score   support
     
                0       0.77      0.65      0.71      8229
                1       0.55      0.68      0.61      5022
     
-        accuracy                           0.67     13251
+        accuracy                           0.66     13251
        macro avg       0.66      0.67      0.66     13251
-    weighted avg       0.69      0.67      0.67     13251
+    weighted avg       0.69      0.66      0.67     13251
     
-    PR-AUC:  0.6683310271522053
+    PR-AUC:  0.6705189734401573
     
 
 
@@ -3195,7 +3071,7 @@ plt.show()
 ```
 
 
-![png](./imgs/output_181_0.png)
+![png](./imgs/output_177_0.png)
 
 
 
@@ -3233,16 +3109,16 @@ returns_chart.dropna(inplace=True)
 returns_chart.reset_index(inplace=True)
 
 # This is for get rid of the groupby no data issue
-accu_metric.to_csv('../data/fuck.csv', index=False)
-accu_metric = pd.read_csv(Path('../data/fuck.csv'), header=0)
-returns_chart.to_csv('../data/fuck2.csv')
-returns_chart = pd.read_csv(Path('../data/fuck2.csv'), header=0)
+accu_metric.to_csv('../data/delme.csv', index=False)
+accu_metric = pd.read_csv(Path('../data/delme.csv'), header=0)
+returns_chart.to_csv('../data/delme2.csv')
+returns_chart = pd.read_csv(Path('../data/delme2.csv'), header=0)
 
 f, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12, 3), dpi=90)
 sns.barplot(x='proba_range', y='total', data=accu_metric, color=sns.xkcd_rgb['windows blue'], ax=ax1)
 ax1.set_xlabel('Prediction Probability Range')
 ax1.set_ylabel('Frequency')
-ax1.set_title('Distirubtion of Prediction Accuracy Percentage ')
+ax1.set_title('Distribution of Prediction Accuracy Percentage ')
 # ax1.set_xticklabels(ax1.get_xticklabels(), rotation=90)
 sns.barplot(x='proba_range', y="avg_improvement", data=returns_chart, color=sns.xkcd_rgb['windows blue'], ax=ax2)
 ax2.set_xlabel('Prediction Probability Range')
@@ -3253,7 +3129,7 @@ plt.show()
 ```
 
 
-![png](./imgs/output_182_0.png)
+![png](./imgs/output_178_0.png)
 
 
 
@@ -3271,8 +3147,8 @@ print('Percent improvement:', pcnt_chng)
 ```
 
     Overall return without model: -20.615711683298986
-    Overall return with model: -7.897430408063977
-    Percent improvement: 84.04148464777614
+    Overall return with model: -8.078301566512902
+    Percent improvement: 83.41007713613459
     
 
 
