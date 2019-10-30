@@ -98,6 +98,11 @@ Many models were trained and fitted, but the final model chosen is a ensemble mo
     Overall return with model: -7.90%
     Overall percent improvement: 84.04%
 
+    模型准确性: 68%
+    没有用模型的整体回报：-20.62%
+    使用模型的整体回报：-7.90%
+    整体的百分改善：84.04%
+
 ![Returns](./src/imgs/returns.png)
 
 * Left: If the model predicted fully paid with 75% probability, this would be categorised to be in the 70% - 80% range
