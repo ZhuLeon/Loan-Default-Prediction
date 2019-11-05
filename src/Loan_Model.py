@@ -1169,16 +1169,16 @@ def loan_model():
     returns_chart.reset_index(inplace=True)
 
     # This is for get rid of the groupby no data issue
-    accu_metric.to_csv('../data/fuck.csv', index=False)
-    accu_metric = pd.read_csv(Path('../data/fuck.csv'), header=0)
-    returns_chart.to_csv('../data/fuck2.csv')
-    returns_chart = pd.read_csv(Path('../data/fuck2.csv'), header=0)
+    accu_metric.to_csv('../data/delme.csv', index=False)
+    accu_metric = pd.read_csv(Path('../data/delme.csv'), header=0)
+    returns_chart.to_csv('../data/delme2.csv')
+    returns_chart = pd.read_csv(Path('../data/delme2.csv'), header=0)
 
     f, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12, 3), dpi=90)
     sns.barplot(x='proba_range', y='total', data=accu_metric, color=sns.xkcd_rgb['windows blue'], ax=ax1)
     ax1.set_xlabel('Prediction Probability Range')
     ax1.set_ylabel('Frequency')
-    ax1.set_title('Distirubtion of Prediction Accuracy Percentage ')
+    ax1.set_title('Distribution of Prediction Ranges')
     # ax1.set_xticklabels(ax1.get_xticklabels(), rotation=90)
     sns.barplot(x='proba_range', y="avg_improvement", data=returns_chart, color=sns.xkcd_rgb['windows blue'], ax=ax2)
     ax2.set_xlabel('Prediction Probability Range')
